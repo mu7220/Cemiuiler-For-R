@@ -5,9 +5,12 @@ import android.content.pm.ApplicationInfo;
 import com.sevtinge.cemiuiler.R;
 import com.sevtinge.cemiuiler.XposedInit;
 import com.sevtinge.cemiuiler.module.base.SystemUIHook;
+import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
+import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 
-import de.robv.android.xposed.XposedHelpers;
 import io.github.libxposed.api.XposedInterface.AfterHookCallback;
+import io.github.libxposed.api.XposedInterface.BeforeHookCallback;
 
 public class NotificationVolumeSeparateSlider extends SystemUIHook {
 
@@ -23,23 +26,22 @@ public class NotificationVolumeSeparateSlider extends SystemUIHook {
     public void init() {
         initRes();
 
-        hookAllMethods(mPluginLoaderClass, "getClassLoader", new MethodHook() {
+        ModuleHelper.hookAllMethods(mPluginLoaderClass, "getClassLoader", new MethodHook() {
             @Override
             protected void after(AfterHookCallback param) {
-                ApplicationInfo appInfo = (ApplicationInfo) param.args[0];
+                ApplicationInfo appInfo = (ApplicationInfo) param.getArgs()[0];
                 if ("miui.systemui.plugin".equals(appInfo.packageName) && !isHooked) {
                     isHooked = true;
                     if (pluginLoader == null) pluginLoader = (ClassLoader) param.getResult();
 
                     mMiuiVolumeDialogImpl = findClassIfExists("com.android.systemui.miui.volume.MiuiVolumeDialogImpl", pluginLoader);
-
-                    hookAllMethods(mMiuiVolumeDialogImpl, "addColumn", new MethodHook() {
+                    ModuleHelper.hookAllMethods(mMiuiVolumeDialogImpl, "addColumn", new MethodHook() {
                         @Override
-                        protected void before(MethodHookParam param) {
-                            if (param.args.length != 4) return;
-                            int streamType = (int) param.args[0];
+                        protected void before(BeforeHookCallback param) {
+                            if (param.getArgs().length != 4) return;
+                            int streamType = (int) param.getArgs()[0];
                             if (streamType == 4) {
-                                XposedHelpers.callMethod(param.thisObject, "addColumn", 5, notifVolumeOnResId, notifVolumeOffResId, true, false);
+                                XposedHelpers.callMethod(param.getThisObject(), "addColumn", 5, notifVolumeOnResId, notifVolumeOffResId, true, false);
                             }
                         }
                     });

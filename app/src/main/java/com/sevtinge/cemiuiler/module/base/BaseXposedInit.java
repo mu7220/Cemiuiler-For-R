@@ -59,6 +59,7 @@ import com.sevtinge.cemiuiler.utils.DexKit;
 import com.sevtinge.cemiuiler.utils.Helpers;
 import com.sevtinge.cemiuiler.utils.PrefsMap;
 import com.sevtinge.cemiuiler.utils.PrefsUtils;
+import com.sevtinge.cemiuiler.utils.ResourcesHook;
 import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
 import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.libxposed.api.XposedInterface.BeforeHookCallback;
 
-public class ResourceHooks {
+public class ResourcesHook {
     private boolean hooksApplied = false;
 
     public enum ReplacementType {
