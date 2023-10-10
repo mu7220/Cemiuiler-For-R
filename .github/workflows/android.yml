@@ -12,7 +12,7 @@ on:
       - ".github/workflows/crowdin.yml"
       - "crowdin.yml"
   pull_request:
-    branches: [ "main" ]
+    branches: [ "old" ]
     paths-ignore:
       - ".github/**"
       - "!.github/workflows/**"
