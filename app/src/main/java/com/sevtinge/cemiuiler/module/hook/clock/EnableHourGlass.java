@@ -10,7 +10,7 @@ public class EnableHourGlass extends BaseHook {
         int appVersionCode = getPackageVersionCode(lpparam);
         hookAllMethods("com.android.deskclock.util.Util", "isHourGlassEnable", new MethodHook() {
             @Override
-            protected void before(MethodHookParam param) {
+            private void before(MethodHook param) {
                 if (appVersionCode <= 130206400) {
                     param.setResult(true);
                 } else {

@@ -3,9 +3,11 @@ package com.sevtinge.cemiuiler.module.hook.various;
 import android.view.View;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
+import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;
 
-import de.robv.android.xposed.XposedHelpers;
+import io.github.libxposed.api.XposedInterface.BeforeHookCallback;
 
 public class MiuiAppNoOverScroll extends BaseHook {
 
@@ -19,9 +21,9 @@ public class MiuiAppNoOverScroll extends BaseHook {
         try {
             MethodHook hookParam = new MethodHook() {
                 @Override
-                protected void before(MethodHookParam param) {
-                    XposedHelpers.setBooleanField(param.thisObject, "mSpringBackEnable", false);
-                    param.args[0] = false;
+                protected void before(BeforeHookCallback param) {
+                    XposedHelpers.setBooleanField(param.getThisObject(), "mSpringBackEnable", false);
+                    param.getArgs()[0] = false;
                 }
             };
 

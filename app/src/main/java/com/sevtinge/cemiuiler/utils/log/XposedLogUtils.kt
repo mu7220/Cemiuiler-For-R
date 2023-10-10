@@ -2,7 +2,7 @@ package com.sevtinge.cemiuiler.utils.log
 
 import com.sevtinge.cemiuiler.BuildConfig
 import com.sevtinge.cemiuiler.module.base.BaseHook
-import de.robv.android.xposed.XposedBridge
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers
 
 object XposedLogUtils {
     private val isDebugVersion = BuildConfig.BUILD_TYPE.contains("debug")
@@ -13,23 +13,23 @@ object XposedLogUtils {
     fun logI(tag: String, msg: String) {
         if (!isDebugVersion) return
         if (detailLog) return
-        XposedBridge.log("[Cemiuiler][I][$tag]: $msg")
+        XposedHelpers.log("[Cemiuiler][I][$tag]: $msg")
     }
 
     fun logI(msg: String) {
         if (!isDebugVersion) return
         if (detailLog) return
-        XposedBridge.log("[Cemiuiler][I]: $msg")
+        XposedHelpers.log("[Cemiuiler][I]: $msg")
     }
 
     fun logW(tag: String, log: Throwable) {
         if (detailLog) return
-        XposedBridge.log("[Cemiuiler][W][$tag]: $log")
+        XposedHelpers.log("[Cemiuiler][W][$tag]: $log")
     }
 
     fun logW(tag: String, msg: String, log: Throwable) {
         if (detailLog) return
-        XposedBridge.log("[Cemiuiler][W][$tag]: $msg, warning by $log")
+        XposedHelpers.log("[Cemiuiler][W][$tag]: $msg, warning by $log")
     }
 
     fun logE(tag: String, log: Throwable?, exp: Exception?) {
@@ -39,7 +39,7 @@ object XposedLogUtils {
                 exp != null -> ", hook failed by $exp"
                 else -> ""
             }
-        XposedBridge.log(logMessage)
+        XposedHelpers.log(logMessage)
     }
 
     fun logE(tag: String, msg: String, log: Throwable?, exp: Exception?) {
@@ -49,17 +49,17 @@ object XposedLogUtils {
                 exp != null -> ", hook failed by $exp"
                 else -> ""
             }
-        XposedBridge.log(logMessage)
+        XposedHelpers.log(logMessage)
     }
 
     fun logD(tag: String, msg: String) {
         if (!isDebugVersion) return
-        XposedBridge.log("[Cemiuiler][D][$tag]: $msg")
+        XposedHelpers.log("[Cemiuiler][D][$tag]: $msg")
     }
 
     fun logD(msg: String) {
         if (!isDebugVersion) return
-        XposedBridge.log("[Cemiuiler][D]: $msg")
+        XposedHelpers.log("[Cemiuiler][D]: $msg")
     }
 
 }

@@ -2,6 +2,10 @@ package com.sevtinge.cemiuiler.module.base;
 
 import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogD;
 
+import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
+
 import com.sevtinge.cemiuiler.BuildConfig;
 import com.sevtinge.cemiuiler.module.app.AiAsst;
 import com.sevtinge.cemiuiler.module.app.Aod;
@@ -55,23 +59,21 @@ import com.sevtinge.cemiuiler.utils.DexKit;
 import com.sevtinge.cemiuiler.utils.Helpers;
 import com.sevtinge.cemiuiler.utils.PrefsMap;
 import com.sevtinge.cemiuiler.utils.PrefsUtils;
-import com.sevtinge.cemiuiler.utils.ResourcesHook;
+import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;
 
 import java.io.File;
 import java.util.Map;
 
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
-import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import io.github.libxposed.api.XposedInterface;
+import io.github.libxposed.api.XposedModule;
 
-public abstract class BaseXposedInit implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public abstract class BaseXposedInit extends XposedModule {
 
-    public static ResourcesHook mResHook;
+    public static ResourcesHook mResHook = new ResourcesHook();
     public static String mModulePath = null;
+    String processName;
     public static PrefsMap<String, Object> mPrefsMap = new PrefsMap<>();
 
     public final SystemFramework mSystemFramework = new SystemFramework();
@@ -124,6 +126,30 @@ public abstract class BaseXposedInit implements IXposedHookLoadPackage, IXposedH
     public final Creation mCreation = new Creation();
     public final Nfc mNfc = new Nfc();
 
+    public BaseXposedInit(@NonNull XposedInterface base, @NonNull ModuleLoadedParam param) {
+        super(base, param);
+        processName = param.getProcessName();
+    }
+
+    private void initPrefs() {
+        XposedHelpers.moduleInst = this;
+        SharedPreferences readPrefs = getRemotePreferences(ModuleHelper.prefsName + "_remote");
+        Map<String, ?> allPrefs = readPrefs.getAll();
+        if (allPrefs == null || allPrefs.size() == 0)
+            XposedLogUtils.INSTANCE.logE(
+                "UID " + android.os.Process.myUid(),
+                "Empty preferences!",
+                null, null
+            );
+        else
+            mPrefsMap.putAll(allPrefs);
+    }
+
+    @Override
+    public void onSystemServerLoaded(final SystemServerLoadedParam lpparam) {
+        initPrefs();
+    }
+
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         setXSharedPrefs();
@@ -161,8 +187,8 @@ public abstract class BaseXposedInit implements IXposedHookLoadPackage, IXposedH
         }
     }
 
-    public void init(LoadPackageParam lpparam) {
-        String packageName = lpparam.packageName;
+    public void init(PackageLoadedParam lpparam) {
+        String packageName = lpparam.getPackageName();
         switch (packageName) {
             case "android" -> {
                 mSystemFramework.init(lpparam);

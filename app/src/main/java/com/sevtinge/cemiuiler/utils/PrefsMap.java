@@ -1,7 +1,7 @@
 package com.sevtinge.cemiuiler.utils;
 
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 public class PrefsMap<K, V> extends HashMap<K, V> {
@@ -11,29 +11,48 @@ public class PrefsMap<K, V> extends HashMap<K, V> {
     }
 
     public int getInt(String key, int defValue) {
-        key = "prefs_key_" + key;
-        return get(key) == null ? defValue : (Integer) get(key);
+        if (!key.startsWith("prefs_key_")) {
+            key = "prefs_key_" + key;
+        }
+        return get(key) == null ? defValue : (Integer)get(key);
+    }
+
+    public long getLong(String key, long defValue) {
+        if (!key.startsWith("prefs_key_")) {
+            key = "prefs_key_" + key;
+        }
+        return get(key) == null ? defValue : (Long)get(key);
     }
 
     public String getString(String key, String defValue) {
-        key = "prefs_key_" + key;
-        return get(key) == null ? defValue : (String) get(key);
+        if (!key.startsWith("prefs_key_")) {
+            key = "prefs_key_" + key;
+        }
+        return get(key) == null ? defValue : (String)get(key);
     }
 
     public int getStringAsInt(String key, int defValue) {
-        key = "prefs_key_" + key;
-        return get(key) == null ? defValue : Integer.parseInt((String) get(key));
+        if (!key.startsWith("prefs_key_")) {
+            key = "prefs_key_" + key;
+        }
+        return get(key) == null ? defValue : Integer.parseInt((String)get(key));
     }
 
-    @SuppressWarnings("unchecked")
     public Set<String> getStringSet(String key) {
-        key = "prefs_key_" + key;
-        return get(key) == null ? new LinkedHashSet<>() : (Set<String>) get(key);
+        if (!key.startsWith("prefs_key_")) {
+            key = "prefs_key_" + key;
+        }
+        return get(key) == null ? new HashSet<>() : (Set<String>)get(key);
     }
 
     public boolean getBoolean(String key) {
-        key = "prefs_key_" + key;
-        return get(key) == null ? false : (Boolean) get(key);
+        return getBoolean(key, false);
+    }
+    public boolean getBoolean(String key, boolean defValue) {
+        if (!key.startsWith("prefs_key_")) {
+            key = "prefs_key_" + key;
+        }
+        return get(key) == null ? defValue : (Boolean)get(key);
     }
 
 }

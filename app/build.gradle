@@ -129,8 +129,8 @@ dependencies {
     compileOnly files('libs/miui.jar')
     compileOnly files("libs/miui-framework.jar")
 
-    compileOnly(roots.XposedApi)
-
+    implementation "io.github.libxposed:service:100-1.0.0"
+    implementation "org.apache.commons:commons-lang3:3.13.0"
     implementation 'org.luckypray:dexkit:2.0.0-rc5'
     // implementation 'org.luckypray:DexKit:1.1.8'
     implementation 'com.github.kyuubiran:EzXHelper:2.0.7'
@@ -156,4 +156,5 @@ dependencies {
     implementation files(roots.preference)
     implementation files(roots.smooth)
     implementation files(roots.springback)
+    implementation files(roots.xposed_new_api)
 }

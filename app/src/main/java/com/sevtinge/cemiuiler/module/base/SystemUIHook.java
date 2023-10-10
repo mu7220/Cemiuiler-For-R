@@ -3,9 +3,7 @@ package com.sevtinge.cemiuiler.module.base;
 
 import static com.sevtinge.cemiuiler.utils.devicesdk.SystemSDKKt.isMoreAndroidVersion;
 
-import android.os.Build;
-
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam;
 
 public abstract class SystemUIHook extends BaseHook {
 
@@ -13,7 +11,7 @@ public abstract class SystemUIHook extends BaseHook {
     public String mPluginLoaderClassName;
 
     @Override
-    public void setLoadPackageParam(LoadPackageParam param) {
+    public void setLoadPackageParam(PackageLoadedParam param) {
         super.setLoadPackageParam(param);
 
         if (isMoreAndroidVersion(33)) {

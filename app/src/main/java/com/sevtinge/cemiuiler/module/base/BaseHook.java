@@ -1,20 +1,16 @@
 package com.sevtinge.cemiuiler.module.base;
 
 import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogD;
-import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.deLogI;
 
 import com.sevtinge.cemiuiler.BuildConfig;
 import com.sevtinge.cemiuiler.XposedInit;
 import com.sevtinge.cemiuiler.utils.PrefsMap;
-import com.sevtinge.cemiuiler.utils.ResourcesHook;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;
 
 import java.lang.reflect.Method;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam;
 
 public abstract class BaseHook {
     public String TAG = getClass().getSimpleName();
@@ -22,15 +18,15 @@ public abstract class BaseHook {
     private static final boolean isNotReleaseVersion = !BuildConfig.BUILD_TYPE.contains("release");
     private final boolean detailLog = !mPrefsMap.getBoolean("settings_disable_detailed_log");
 
-    public LoadPackageParam lpparam;
-    public static final ResourcesHook mResHook = XposedInit.mResHook;
+    public PackageLoadedParam lpparam;
+    public static ResourcesHook mResHook = XposedInit.mResHook;
     public static final PrefsMap<String, Object> mPrefsMap = XposedInit.mPrefsMap;
 
     public static final String ACTION_PREFIX = "com.sevtinge.cemiuiler.module.action.";
 
     public abstract void init();
 
-    public void onCreate(LoadPackageParam lpparam) {
+    public void onCreate(PackageLoadedParam lpparam) {
         try {
             setLoadPackageParam(lpparam);
             init();
@@ -42,42 +38,42 @@ public abstract class BaseHook {
         }
     }
 
-    public void setLoadPackageParam(LoadPackageParam param) {
+    public void setLoadPackageParam(PackageLoadedParam param) {
         lpparam = param;
     }
 
     public void logI(String log) {
         if (detailLog && isNotReleaseVersion) {
-            XposedBridge.log("[Cemiuiler][I][" + TAG + "]: " + log);
+            XposedHelpers.log("[Cemiuiler][I][" + TAG + "]: " + log);
         }
     }
 
     public void logE(Exception e) {
-        XposedBridge.log("[Cemiuiler][E][" + TAG + "]: hook failed by " + e);
+        XposedHelpers.log("[Cemiuiler][E][" + TAG + "]: hook failed by " + e);
     }
 
     public void logE(Throwable t) {
-        XposedBridge.log("[Cemiuiler][E][" + TAG + "]: hook failed by " + t);
+        XposedHelpers.log("[Cemiuiler][E][" + TAG + "]: hook failed by " + t);
     }
 
     public void logE(String log) {
-        XposedBridge.log("[Cemiuiler][E][" + TAG + "]: hook failed by " + log);
+        XposedHelpers.log("[Cemiuiler][E][" + TAG + "]: hook failed by " + log);
     }
 
     public void logE(String tag, Exception e) {
-        XposedBridge.log("[Cemiuiler][E][" + TAG + "]: " + tag + " hook failed by " + e);
+        XposedHelpers.log("[Cemiuiler][E][" + TAG + "]: " + tag + " hook failed by " + e);
     }
 
     public void logE(String tag, Throwable t) {
-        XposedBridge.log("[Cemiuiler][E][" + TAG + "]: " + tag + " hook failed by " + t);
+        XposedHelpers.log("[Cemiuiler][E][" + TAG + "]: " + tag + " hook failed by " + t);
     }
 
     public void logE(String tag, String log) {
-        XposedBridge.log("[Cemiuiler][E][" + TAG + "]: " + tag + " hook failed by " + log);
+        XposedHelpers.log("[Cemiuiler][E][" + TAG + "]: " + tag + " hook failed by " + log);
     }
 
     public Class<?> findClass(String className) {
-        return findClass(className, lpparam.classLoader);
+        return findClass(className, lpparam.getClassLoader());
     }
 
     public Class<?> findClass(String className, ClassLoader classLoader) {
@@ -110,43 +106,6 @@ public abstract class BaseHook {
             return null;
         }
     }
-
-    public static class MethodHook extends XC_MethodHook {
-
-        protected void before(MethodHookParam param) throws Throwable {
-        }
-
-        protected void after(MethodHookParam param) throws Throwable {
-        }
-
-        public MethodHook() {
-            super();
-        }
-
-        public MethodHook(int priority) {
-            super(priority);
-        }
-
-
-        @Override
-        public void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            try {
-                this.before(param);
-            } catch (Throwable t) {
-                LogD("BeforeHook", t);
-            }
-        }
-
-        @Override
-        public void afterHookedMethod(MethodHookParam param) throws Throwable {
-            try {
-                this.after(param);
-            } catch (Throwable t) {
-                LogD("AfterHook",  t);
-            }
-        }
-    }
-
 
     public void findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
         XposedHelpers.findAndHookMethod(clazz, methodName, parameterTypesAndCallback);
@@ -185,10 +144,10 @@ public abstract class BaseHook {
     }
 
     public void hookMethod(Method method, MethodHook callback) {
-        XposedBridge.hookMethod(method, callback);
+        XposedHelpers.doHookMethod(method, callback);
     }
 
-    public void hookAllMethods(String className, String methodName, XC_MethodHook callback) {
+    public void hookAllMethods(String className, String methodName, MethodHook callback) {
         try {
             Class<?> hookClass = findClassIfExists(className);
             if (hookClass != null) {

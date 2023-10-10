@@ -3,14 +3,14 @@ package com.sevtinge.cemiuiler.module.base;
 import com.sevtinge.cemiuiler.XposedInit;
 import com.sevtinge.cemiuiler.utils.PrefsMap;
 
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam;
 
 public abstract class BaseModule implements IXposedHook {
 
-    public LoadPackageParam mLoadPackageParam = null;
+    public PackageLoadedParam mLoadPackageParam = null;
     public final PrefsMap<String, Object> mPrefsMap = XposedInit.mPrefsMap;
 
-    public void init(LoadPackageParam lpparam) {
+    public void init(PackageLoadedParam lpparam) {
         mLoadPackageParam = lpparam;
         initZygote();
         handleLoadPackage();

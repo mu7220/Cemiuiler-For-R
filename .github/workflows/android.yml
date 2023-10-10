@@ -43,10 +43,12 @@ jobs:
           echo ${{ secrets.SIGNING_KEY }} | base64 --decode > key.jks
 
       - name: Build with Gradle
+        if: contains(github.event.head_commit.message, '[skip]') == false
         shell: bash
         run: ./gradlew assembleCanary
 
       - name: Find APKs
+        if: contains(github.event.head_commit.message, '[skip]') == false
         run: |
           echo "APK_FILE_CANARY=$(find app/build/outputs/apk/canary -name '*.apk')" >> $GITHUB_ENV
 
@@ -67,6 +69,7 @@ jobs:
           path: ${{ env.APK_FILE_CANARY }}
 
       - name: Post to Android 14 Debug Group
+        if: contains(github.event.head_commit.message, '[skip]') == false
         shell: bash
         env:
           GROUP_ID: ${{ secrets.DEBUG_GROUP_ID }}

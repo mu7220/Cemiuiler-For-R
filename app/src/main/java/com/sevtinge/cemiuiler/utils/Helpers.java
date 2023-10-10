@@ -1,12 +1,12 @@
 package com.sevtinge.cemiuiler.utils;
 
+import static com.sevtinge.cemiuiler.utils.hook.XposedHelpers.log;
 import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogD;
 import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogI;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -19,7 +19,6 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.LruCache;
@@ -28,19 +27,16 @@ import android.widget.TextView;
 import com.sevtinge.cemiuiler.BuildConfig;
 import com.sevtinge.cemiuiler.module.base.BaseHook;
 import com.sevtinge.cemiuiler.provider.SharedPrefsProvider;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam;
 import moralnorm.internal.utils.ReflectUtils;
 
 public class Helpers {
@@ -83,14 +79,6 @@ public class Helpers {
         }
     }
 
-    public static Object getStaticObjectFieldSilently(Class<?> clazz, String fieldName) {
-        try {
-            return XposedHelpers.getStaticObjectField(clazz, fieldName);
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
     public static class MimeType {
         public static int IMAGE = 1;
         public static int AUDIO = 2;
@@ -116,11 +104,6 @@ public class Helpers {
         } catch (Throwable ignore) {
         }
         return isDackMode(context) ? black : white;
-    }
-
-    public static Object proxySystemProperties(String method, String prop, int val, ClassLoader classLoader) {
-        return XposedHelpers.callStaticMethod(XposedHelpers.findClassIfExists("android.os.SystemProperties", classLoader),
-            method, prop, val);
     }
 
 
@@ -173,29 +156,6 @@ public class Helpers {
         return stackTrace[4].getMethodName();
     }
 
-    public static void hookMethod(Method method, MethodHook callback) {
-        try {
-            XposedBridge.hookMethod(method, callback);
-        } catch (Throwable t) {
-            LogI(getCallerMethod(), "Failed to hook " + method.getName() + " method");
-        }
-    }
-
-    public static Context findContext() {
-        Context context = null;
-        try {
-            context = (Application) XposedHelpers.callStaticMethod(XposedHelpers.findClass("android.app.ActivityThread", null), "currentApplication");
-            if (context == null) {
-                Object currentActivityThread = XposedHelpers.callStaticMethod(XposedHelpers.findClass("android.app.ActivityThread", null), "currentActivityThread");
-                if (currentActivityThread != null)
-                    context = (Context) XposedHelpers.callMethod(currentActivityThread, "getSystemContext");
-            }
-        } catch (Throwable ignore) {
-        }
-        return context;
-    }
-
-
     public static synchronized Context getModuleContext(Context context) throws Throwable {
         return getModuleContext(context, null);
     }
@@ -234,7 +194,7 @@ public class Helpers {
         return makeBasic;
     }
 
-    public static XC_MethodHook.Unhook findAndHookMethodUseUnhook(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
+   /* public static XC_MethodHook.Unhook findAndHookMethodUseUnhook(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
         try {
             return XposedHelpers.findAndHookMethod(className, classLoader, methodName, parameterTypesAndCallback);
         } catch (Throwable t) {
@@ -250,129 +210,7 @@ public class Helpers {
             LogI(getCallerMethod(), "Failed to hook " + methodName + " method in " + clazz.getCanonicalName());
             return null;
         }
-    }
-
-    public static void findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookMethod(className, classLoader, methodName, parameterTypesAndCallback);
-            LogI(getCallerMethod(), "Success to hook " + methodName + " method in " + className);
-        } catch (Throwable t) {
-            LogI(getCallerMethod(), "Failed to hook " + methodName + " method in " + className);
-        }
-    }
-
-    public static void findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookMethod(clazz, methodName, parameterTypesAndCallback);
-        } catch (Throwable t) {
-            LogI(getCallerMethod(), "Failed to hook " + methodName + " method in " + clazz.getCanonicalName());
-        }
-    }
-
-    public static boolean findAndHookMethodSilently(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookMethod(className, classLoader, methodName, parameterTypesAndCallback);
-            LogI(getCallerMethod(), "Success to hook " + methodName + " method in " + className);
-            return true;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
-    public static boolean findAndHookMethodSilently(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookMethod(clazz, methodName, parameterTypesAndCallback);
-            LogI(getCallerMethod(), "Success to hook " + methodName + " method in " + clazz.getCanonicalName());
-            return true;
-        } catch (Throwable t) {
-            LogI(getCallerMethod(), "Failed to hook " + methodName + " method in " + clazz.getCanonicalName() + " Error: " + t);
-            return false;
-        }
-    }
-
-    public static void findAndHookConstructor(String className, ClassLoader classLoader, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookConstructor(className, classLoader, parameterTypesAndCallback);
-            LogI(getCallerMethod(), "Success to hook constructor in " + className);
-        } catch (Throwable t) {
-            LogI(getCallerMethod(), "Failed to hook constructor in " + className + " Error: " + t);
-        }
-    }
-
-    public static void findAndHookConstructor(Class<?> hookClass, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookConstructor(hookClass, parameterTypesAndCallback);
-            LogI(getCallerMethod(), "Success to hook constructor in " + hookClass);
-        } catch (Throwable t) {
-            LogI(getCallerMethod(), "Failed to hook constructor in " + hookClass + " Error: " + t);
-        }
-    }
-
-
-    public static void hookAllMethods(String className, ClassLoader classLoader, String methodName, XC_MethodHook callback) {
-        try {
-            Class<?> hookClass = XposedHelpers.findClassIfExists(className, classLoader);
-            if (hookClass == null || XposedBridge.hookAllMethods(hookClass, methodName, callback).size() == 0)
-                ;
-        } catch (Throwable t) {
-            LogD("hookAllMethods", className + " is abnormal", t);
-        }
-    }
-
-    public static void hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
-        try {
-            if (XposedBridge.hookAllMethods(hookClass, methodName, callback).size() == 0)
-                LogI(getCallerMethod(), "Failed to hook " + methodName + " method in " + hookClass.getCanonicalName());
-        } catch (Throwable t) {
-            LogD("hookAllMethods", hookClass + " is abnormal", t);
-        }
-    }
-
-    public static void hookAllConstructors(String className, ClassLoader classLoader, MethodHook callback) {
-        try {
-            Class<?> hookClass = XposedHelpers.findClassIfExists(className, classLoader);
-            if (hookClass == null || XposedBridge.hookAllConstructors(hookClass, callback).size() == 0)
-                LogI(getCallerMethod(), "Failed to hook " + className + " constructor");
-        } catch (Throwable t) {
-            LogD("hookAllConstructors", className + " is abnormal", t);
-        }
-    }
-
-    public static void hookAllConstructors(Class<?> hookClass, MethodHook callback) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                XposedLogUtils.INSTANCE.logI(getCallerMethod(), "Success to hook " + hookClass.getPackageName() + "/" + hookClass.getCanonicalName() + " constructor");
-            }
-            if (XposedBridge.hookAllConstructors(hookClass, callback).size() == 0)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    XposedLogUtils.INSTANCE.logI(getCallerMethod(), "Failed to hook " + hookClass.getPackageName() + "/" + hookClass.getCanonicalName() + " constructor");
-                }
-        } catch (Throwable t) {
-            LogD("hookAllMethods", hookClass + " is abnormal", t);
-        }
-    }
-
-
-    public static void hookAllMethodsSilently(String className, ClassLoader classLoader, String methodName, XC_MethodHook callback) {
-        try {
-            Class<?> hookClass = XposedHelpers.findClassIfExists(className, classLoader);
-            if (hookClass != null) {
-                XposedBridge.hookAllMethods(hookClass, methodName, callback).size();
-            }
-        } catch (Throwable t) {
-            LogD("hookAllMethodsSilently", className + " is abnormal", t);
-        }
-    }
-
-
-    public static boolean hookAllMethodsSilently(Class<?> hookClass, String methodName, XC_MethodHook callback) {
-        try {
-            return hookClass != null && XposedBridge.hookAllMethods(hookClass, methodName, callback).size() > 0;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
+    }*/
     public static class SharedPrefObserver extends ContentObserver {
 
         enum PrefType {
@@ -497,7 +335,7 @@ public class Helpers {
                 LogI("ContentResolver", "[" + name + "] Cursor fail: null");
             }
         } catch (Throwable t) {
-            XposedBridge.log(t);
+            log(t);
         }
 
         LinkedHashSet<String> empty = new LinkedHashSet<>();
@@ -518,7 +356,7 @@ public class Helpers {
                 return prefValue;
             } else LogI("ContentResolver", "[" + name + "] Cursor fail: " + cursor);
         } catch (Throwable t) {
-            XposedBridge.log(t);
+            log(t);
         }
 
         if (BaseHook.mPrefsMap.containsKey(name))
@@ -570,47 +408,11 @@ public class Helpers {
         return Uri.parse("content://" + SharedPrefsProvider.AUTHORITY + "/pref/");
     }
 
-    public static class MethodHook extends XC_MethodHook {
-
-
-        protected void before(MethodHookParam param) throws Throwable {
-        }
-
-        protected void after(MethodHookParam param) throws Throwable {
-        }
-
-        public MethodHook() {
-            super();
-        }
-
-        public MethodHook(int priority) {
-            super(priority);
-        }
-
-        @Override
-        public final void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            try {
-                this.before(param);
-            } catch (Throwable t) {
-                LogD("beforeHook", t);
-            }
-        }
-
-        @Override
-        public final void afterHookedMethod(MethodHookParam param) throws Throwable {
-            try {
-                this.after(param);
-            } catch (Throwable t) {
-                LogD("afterHook", t);
-            }
-        }
-    }
-
-    public static String getPackageVersionName(XC_LoadPackage.LoadPackageParam lpparam) {
+    public static String getPackageVersionName(PackageLoadedParam lpparam) {
         try {
             Class<?> parserCls = XposedHelpers.findClass("android.content.pm.PackageParser", lpparam.classLoader);
             Object parser = parserCls.newInstance();
-            File apkPath = new File(lpparam.appInfo.sourceDir);
+            File apkPath = new File(lpparam.getApplicationInfo().sourceDir);
             Object pkg = XposedHelpers.callMethod(parser, "parsePackage", apkPath, 0);
             String versionName = (String) XposedHelpers.getObjectField(pkg, "mVersionName");
             XposedLogUtils.INSTANCE.logI("getPackageVersionName", lpparam + " versionName is " + versionName);
@@ -621,11 +423,11 @@ public class Helpers {
         }
     }
 
-    public static int getPackageVersionCode(XC_LoadPackage.LoadPackageParam lpparam) {
+    public static int getPackageVersionCode(PackageLoadedParam lpparam) {
         try {
             Class<?> parserCls = XposedHelpers.findClass("android.content.pm.PackageParser", lpparam.classLoader);
             Object parser = parserCls.newInstance();
-            File apkPath = new File(lpparam.appInfo.sourceDir);
+            File apkPath = new File(lpparam.getApplicationInfo().sourceDir);
             Object pkg = XposedHelpers.callMethod(parser, "parsePackage", apkPath, 0);
             int versionCode = XposedHelpers.getIntField(pkg, "mVersionCode");
             XposedLogUtils.INSTANCE.logI("getPackageVersionCode", lpparam + " versionCode is " + versionCode);

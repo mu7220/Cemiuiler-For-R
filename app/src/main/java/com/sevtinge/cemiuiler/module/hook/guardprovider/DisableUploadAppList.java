@@ -1,6 +1,7 @@
 package com.sevtinge.cemiuiler.module.hook.guardprovider;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
+import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,8 +10,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class DisableUploadAppList extends BaseHook {
@@ -59,7 +58,7 @@ public class DisableUploadAppList extends BaseHook {
                 logI("Info: getAllUnSystemAppsStatus method found.");
             }
 
-            XposedBridge.hookMethod(getAllUnSystemAppsStatus, new XC_MethodHook() {
+            ModuleHelper.hookMethod(getAllUnSystemAppsStatus, new MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     List list = (List) methodHookParam.args[0];

@@ -7,6 +7,7 @@ import com.sevtinge.cemiuiler.XposedInit;
 import com.sevtinge.cemiuiler.module.base.SystemUIHook;
 
 import de.robv.android.xposed.XposedHelpers;
+import io.github.libxposed.api.XposedInterface.AfterHookCallback;
 
 public class NotificationVolumeSeparateSlider extends SystemUIHook {
 
@@ -24,7 +25,7 @@ public class NotificationVolumeSeparateSlider extends SystemUIHook {
 
         hookAllMethods(mPluginLoaderClass, "getClassLoader", new MethodHook() {
             @Override
-            protected void after(MethodHookParam param) {
+            protected void after(AfterHookCallback param) {
                 ApplicationInfo appInfo = (ApplicationInfo) param.args[0];
                 if ("miui.systemui.plugin".equals(appInfo.packageName) && !isHooked) {
                     isHooked = true;
