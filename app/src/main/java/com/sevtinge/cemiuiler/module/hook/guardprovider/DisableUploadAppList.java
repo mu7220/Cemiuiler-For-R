@@ -1,7 +1,9 @@
 package com.sevtinge.cemiuiler.module.hook.guardprovider;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
+import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
 import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,17 +12,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import de.robv.android.xposed.XposedHelpers;
+import io.github.libxposed.api.XposedInterface.AfterHookCallback;
+import io.github.libxposed.api.XposedInterface.BeforeHookCallback;
 
 public class DisableUploadAppList extends BaseHook {
 
     @Override
     public void init(/*final XC_LoadPackage.LoadPackageParam lpparam*/) {
-        if (lpparam.packageName.equals("com.miui.guardprovider")) {
-            logI("Start to hook package " + lpparam.packageName);
+        if (lpparam.getPackageName().equals("com.miui.guardprovider")) {
+            logI("Start to hook package " + lpparam.getPackageName());
 
             // Debug mode flag process
-            final Class<?> guardApplication = XposedHelpers.findClass("com.miui.guardprovider.GuardApplication", lpparam.classLoader);
+            final Class<?> guardApplication = XposedHelpers.findClass("com.miui.guardprovider.GuardApplication", lpparam.getClassLoader());
             if (guardApplication != null) {
                 Field[] guardApplicationFields = guardApplication.getDeclaredFields();
                 for (Field field : guardApplicationFields) {
@@ -35,7 +38,7 @@ public class DisableUploadAppList extends BaseHook {
             }
 
             // Prevent miui from uploading app list
-            final Class<?> antiDefraudAppManager = XposedHelpers.findClassIfExists("com.miui.guardprovider.engine.mi.antidefraud.AntiDefraudAppManager", lpparam.classLoader);
+            final Class<?> antiDefraudAppManager = XposedHelpers.findClassIfExists("com.miui.guardprovider.engine.mi.antidefraud.AntiDefraudAppManager", lpparam.getClassLoader());
             if (antiDefraudAppManager == null) {
                 logI("Skip: AntiDefraudAppManager class not found.");
                 return;
@@ -60,8 +63,8 @@ public class DisableUploadAppList extends BaseHook {
 
             ModuleHelper.hookMethod(getAllUnSystemAppsStatus, new MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                    List list = (List) methodHookParam.args[0];
+                protected void before(final BeforeHookCallback methodHookParam) throws Throwable {
+                    List list = (List) methodHookParam.getArgs()[0];
 
                     String MIUI_VERSION = null;
                     Field[] antiDefraudAppManagerFields = antiDefraudAppManager.getDeclaredFields();
@@ -75,7 +78,7 @@ public class DisableUploadAppList extends BaseHook {
                     }
 
                     String uuid = null;
-                    final Class<?> uuidHelper = XposedHelpers.findClassIfExists("i.b", lpparam.classLoader);
+                    final Class<?> uuidHelper = XposedHelpers.findClassIfExists("i.b", lpparam.getClassLoader());
                     if (uuidHelper != null) {
                         final Method[] uuidHelperMethods = uuidHelper.getDeclaredMethods();
                         Method getUUID = null;
@@ -110,7 +113,7 @@ public class DisableUploadAppList extends BaseHook {
                         String sign = null;
                         String appName = null;
 
-                        Object antiDefraudAppInfo = (Object) list.get(i2);
+                        Object antiDefraudAppInfo = list.get(i2);
 
                         Field[] fields = antiDefraudAppInfo.getClass().getDeclaredFields();
                         for (Field filed : fields) {
@@ -135,8 +138,9 @@ public class DisableUploadAppList extends BaseHook {
                     }
                     jSONObject.put("content", jSONArray);
 
-                    logI("Info: Intercept=" + jSONObject.toString());
-
+                    logI("Info: Intercept=" + jSONObject);
+                }
+                protected void after(final AfterHookCallback methodHookParam) {
                     methodHookParam.setResult(null);
                 }
             });

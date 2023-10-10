@@ -5,6 +5,8 @@ import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogD;
 import com.sevtinge.cemiuiler.BuildConfig;
 import com.sevtinge.cemiuiler.XposedInit;
 import com.sevtinge.cemiuiler.utils.PrefsMap;
+import com.sevtinge.cemiuiler.utils.ResourcesHook;
+import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
 import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;
 
@@ -151,7 +153,7 @@ public abstract class BaseHook {
         try {
             Class<?> hookClass = findClassIfExists(className);
             if (hookClass != null) {
-                XposedBridge.hookAllMethods(hookClass, methodName, callback).size();
+                XposedHelpers.hookAllMethods(hookClass, methodName, callback).size();
             }
 
         } catch (Throwable t) {
@@ -159,28 +161,28 @@ public abstract class BaseHook {
         }
     }
 
-    public void hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
+    public void hookAllMethods(Class<?> hookClass, String methodName, MethodHook callback) {
         try {
-            XposedBridge.hookAllMethods(hookClass, methodName, callback).size();
+            XposedHelpers.hookAllMethods(hookClass, methodName, callback).size();
         } catch (Throwable t) {
             LogD("HookAllMethods", hookClass + " is " + methodName + " abnormal", t);
         }
     }
 
-    public void hookAllMethodsSilently(String className, String methodName, XC_MethodHook callback) {
+    public void hookAllMethodsSilently(String className, String methodName, MethodHook callback) {
         try {
             Class<?> hookClass = findClassIfExists(className);
             if (hookClass != null) {
-                XposedBridge.hookAllMethods(hookClass, methodName, callback).size();
+                XposedHelpers.hookAllMethods(hookClass, methodName, callback).size();
             }
         } catch (Throwable ignored) {
         }
     }
 
-    public boolean hookAllMethodsSilently(Class<?> hookClass, String methodName, XC_MethodHook callback) {
+    public boolean hookAllMethodsSilently(Class<?> hookClass, String methodName, MethodHook callback) {
         try {
             if (hookClass != null) {
-                XposedBridge.hookAllMethods(hookClass, methodName, callback).size();
+                XposedHelpers.hookAllMethods(hookClass, methodName, callback).size();
             }
             return false;
         } catch (Throwable t) {
@@ -192,7 +194,7 @@ public abstract class BaseHook {
         try {
             Class<?> hookClass = findClassIfExists(className);
             if (hookClass != null) {
-                XposedBridge.hookAllConstructors(hookClass, callback).size();
+                XposedHelpers.hookAllConstructors(hookClass, callback).size();
             }
         } catch (Throwable t) {
             LogD("hookAllConstructors", className + " is  abnormal", t);
@@ -201,7 +203,7 @@ public abstract class BaseHook {
 
     public void hookAllConstructors(Class<?> hookClass, MethodHook callback) {
         try {
-            XposedBridge.hookAllConstructors(hookClass, callback).size();
+            XposedHelpers.hookAllConstructors(hookClass, callback).size();
         } catch (Throwable t) {
             LogD("hookAllConstructors", hookClass + " is  abnormal", t);
         }
