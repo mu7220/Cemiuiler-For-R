@@ -32,7 +32,6 @@
     <string name="settings_icon_mode">Estilo do ícone</string>
     <string name="settings_icon_miui_14">Estilo retângulo arredondado</string>
     <string name="settings_icon_miui_13">Estilo de corte de fundo</string>
-    <string name="settings_reboot">Reiniciar app de destino</string>
     <string name="settings_back">Fazer backup das configurações do módulo</string>
     <string name="settings_rest">Restaurar configurações do módulo</string>
     <string name="settings_reset">Redefinir configurações do módulo</string>

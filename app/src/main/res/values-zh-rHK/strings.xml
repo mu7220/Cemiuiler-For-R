@@ -27,7 +27,6 @@
     <string name="settings_icon_mode">圖示樣式</string>
     <string name="settings_icon_miui_14">圓角矩形樣式</string>
     <string name="settings_icon_miui_13">背景鏤空樣式</string>
-    <string name="settings_reboot">重啟作用域</string>
     <string name="settings_back">備份模組設定</string>
     <string name="settings_rest">還原模組設定</string>
     <string name="settings_reset">重設模組設定</string>

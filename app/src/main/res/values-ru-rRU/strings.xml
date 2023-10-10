@@ -27,7 +27,6 @@
     <string name="settings_icon_mode">Стиль значка</string>
     <string name="settings_icon_miui_14">Закругленный квадрат</string>
     <string name="settings_icon_miui_13">Стиль удаления фона</string>
-    <string name="settings_reboot">Перезапустить выбранное приложение</string>
     <string name="settings_back">Сохранить настройки модуля</string>
     <string name="settings_rest">Восстановить настройки модуля</string>
     <string name="settings_reset">Сбросить настройки модуля</string>

@@ -27,7 +27,6 @@
     <string name="settings_icon_mode">Phong cách biểu tượng</string>
     <string name="settings_icon_miui_14">Ô hình chữ nhật bo tròn</string>
     <string name="settings_icon_miui_13">Nền màn hình khuyết</string>
-    <string name="settings_reboot">Khởi động lại ứng dụng liên quan</string>
     <string name="settings_back">Sao lưu cài đặt module</string>
     <string name="settings_rest">Khôi phục cài đặt module</string>
     <string name="settings_reset">Đặt lại cài đặt module</string>

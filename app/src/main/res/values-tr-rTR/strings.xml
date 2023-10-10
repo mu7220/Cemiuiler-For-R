@@ -27,7 +27,6 @@
     <string name="settings_icon_mode">Simge stili</string>
     <string name="settings_icon_miui_14">Yuvarlatılmış dikdörtgen stili</string>
     <string name="settings_icon_miui_13">Arka plan kesme stili</string>
-    <string name="settings_reboot">Hedef uygulamayı yeniden başlatın.</string>
     <string name="settings_back">Yedekleme modülü ayarları.</string>
     <string name="settings_rest">Modül ayarlarını geri yükle.</string>
     <string name="settings_reset">Modül ayarlarını sıfırla.</string>

@@ -32,7 +32,6 @@
     <string name="settings_icon_mode">アイコンのスタイル</string>
     <string name="settings_icon_miui_14">丸みを帯びた長方形のスタイル</string>
     <string name="settings_icon_miui_13">背景の切り抜きスタイル</string>
-    <string name="settings_reboot">ターゲットアプリを再起動</string>
     <string name="settings_back">モジュールの設定をバックアップ</string>
     <string name="settings_rest">モジュールの設定を復元</string>
     <string name="settings_reset">モジュールの設定をリセット</string>
