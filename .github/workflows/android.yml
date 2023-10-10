@@ -3,14 +3,6 @@ name: Android CI
 on:
   push:
     branches: [ "old" ]
-    paths-ignore:
-      - ".github/**"
-      - "!.github/workflows/**"
-      - ".idea/"
-      - "doc/*"
-      - "*.md"
-      - ".github/workflows/crowdin.yml"
-      - "crowdin.yml"
   pull_request:
     branches: [ "old" ]
     paths-ignore:
