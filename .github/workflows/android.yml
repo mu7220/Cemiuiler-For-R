@@ -68,7 +68,6 @@ jobs:
           path: ${{ env.APK_FILE_CANARY }}
 
       - name: Post to Android 14 Debug Group
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.ref_type != 'tag' && contains(github.event.head_commit.message, '[skip post]') == false && contains(github.event.head_commit.message, 's#') == false }}
         shell: bash
         env:
           GROUP_ID: ${{ secrets.DEBUG_GROUP_ID }}

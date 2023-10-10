@@ -18,7 +18,10 @@ import com.sevtinge.cemiuiler.utils.devicesdk.isMoreAndroidVersion
 import com.sevtinge.cemiuiler.utils.getObjectField
 import java.lang.reflect.Method
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 object TimeCustomization : BaseHook() {
     // 预设模式
@@ -38,7 +41,6 @@ object TimeCustomization : BaseHook() {
     // 极客模式
     private val getGeekClockSize = mPrefsMap.getInt("system_ui_statusbar_clock_size_geek", 0)
     private val getGeekFormat = mPrefsMap.getString("system_ui_statusbar_clock_editor", "HH:mm:ss")
-
 
     private lateinit var nowTime: Date
     private var str = ""
