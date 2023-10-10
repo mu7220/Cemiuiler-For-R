@@ -1,13 +1,11 @@
 package com.sevtinge.cemiuiler.module.hook.systemsettings;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
-import com.sevtinge.cemiuiler.utils.Helpers;
 
 public class AppsFreezerEnable extends BaseHook {
     @Override
     public void init() {
-        Helpers.findAndHookMethod("com.android.settings.development.CachedAppsFreezerPreferenceController",
-            lpparam.classLoader,
+        findAndHookMethod("com.android.settings.development.CachedAppsFreezerPreferenceController",
             "isAvailable",
             new MethodHook() {
                 @Override

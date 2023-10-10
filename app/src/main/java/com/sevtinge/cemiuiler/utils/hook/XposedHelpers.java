@@ -23,14 +23,7 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.CustomHooker;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.CustomMethodUnhooker;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.HighestPriorityHooker;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.LowestPriorityHooker;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
+import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.MemberUtilsX;
@@ -44,12 +37,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -57,137 +48,38 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.libxposed.api.XposedInterface;
+import io.github.libxposed.api.XposedModuleInterface;
 
 
 /**
  * Helpers that simplify hooking and calling methods/constructors, getting and settings fields, ...
  */
-public final class XposedHelpers {
+public abstract class XposedHelpers extends HookerClassHelper {
     public static XposedInterface moduleInst;
     private static final String TAG = "LSPosed-Bridge";
-    private XposedHelpers() {
-    }
-
+    public static XposedModuleInterface.PackageLoadedParam lpparam;
     private static final ConcurrentHashMap<MemberCacheKey.Field, Optional<Field>> fieldCache = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<MemberCacheKey.Method, Optional<Method>> methodCache = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<MemberCacheKey.Constructor, Optional<Constructor<?>>> constructorCache = new ConcurrentHashMap<>();
     private static final WeakHashMap<Object, HashMap<String, Object>> additionalFields = new WeakHashMap<>();
     private static final HashMap<String, ThreadLocal<AtomicInteger>> sMethodDepth = new HashMap<>();
 
-    /**
-     * Note that we use object key instead of string here, because string calculation will lose all
-     * the benefits of 'HashMap', this is basically the solution of performance traps.
-     * <p>
-     * So in fact we only need to use the structural comparison results of the reflection object.
-     *
-     * @see <a href="https://github.com/RinOrz/LSPosed/blob/a44e1f1cdf0c5e5ebfaface828e5907f5425df1b/benchmark/src/result/ReflectionCacheBenchmark.json">benchmarks for ART</a>
-     * @see <a href="https://github.com/meowool-catnip/cloak/blob/main/api/src/benchmark/kotlin/com/meowool/cloak/ReflectionObjectAccessTests.kt#L37-L65">benchmarks for JVM</a>
-     */
-    private abstract static class MemberCacheKey {
-        private final int hash;
+    public abstract void init();
 
-        protected MemberCacheKey(int hash) {
-            this.hash = hash;
+    public void onCreate(XposedModuleInterface.PackageLoadedParam lpparam) {
+        try {
+            setLoadPackageParam(lpparam);
+            init();
+            // if (detailLog && isNotReleaseVersion) {
+            XposedLogUtils.INSTANCE.logI(TAG, "Hook Success.");
+            // }
+        } catch (Throwable t) {
+            XposedLogUtils.INSTANCE.logE(TAG, "Hook Failed", t, null);
         }
+    }
 
-        @Override
-        public abstract boolean equals(@Nullable Object obj);
-
-        @Override
-        public final int hashCode() {
-            return hash;
-        }
-
-        static final class Constructor extends MemberCacheKey {
-            private final Class<?> clazz;
-            private final Class<?>[] parameters;
-            private final boolean isExact;
-
-            public Constructor(Class<?> clazz, Class<?>[] parameters, boolean isExact) {
-                super(31 * Objects.hash(clazz, isExact) + Arrays.hashCode(parameters));
-                this.clazz = clazz;
-                this.parameters = parameters;
-                this.isExact = isExact;
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (!(o instanceof Constructor)) return false;
-                Constructor that = (Constructor) o;
-                return isExact == that.isExact && Objects.equals(clazz, that.clazz) && Arrays.equals(parameters, that.parameters);
-            }
-
-            @NonNull
-            @Override
-            public String toString() {
-                String str = clazz.getName() + getParametersString(parameters);
-                if (isExact) {
-                    return str + "#exact";
-                } else {
-                    return str;
-                }
-            }
-        }
-
-        static final class Field extends MemberCacheKey {
-            private final Class<?> clazz;
-            private final String name;
-
-            public Field(Class<?> clazz, String name) {
-                super(Objects.hash(clazz, name));
-                this.clazz = clazz;
-                this.name = name;
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (!(o instanceof Field)) return false;
-                Field field = (Field) o;
-                return Objects.equals(clazz, field.clazz) && Objects.equals(name, field.name);
-            }
-
-            @NonNull
-            @Override
-            public String toString() {
-                return clazz.getName() + "#" + name;
-            }
-        }
-
-        static final class Method extends MemberCacheKey {
-            private final Class<?> clazz;
-            private final String name;
-            private final Class<?>[] parameters;
-            private final boolean isExact;
-
-            public Method(Class<?> clazz, String name, Class<?>[] parameters, boolean isExact) {
-                super(31 * Objects.hash(clazz, name, isExact) + Arrays.hashCode(parameters));
-                this.clazz = clazz;
-                this.name = name;
-                this.parameters = parameters;
-                this.isExact = isExact;
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (!(o instanceof Method)) return false;
-                Method method = (Method) o;
-                return isExact == method.isExact && Objects.equals(clazz, method.clazz) && Objects.equals(name, method.name) && Arrays.equals(parameters, method.parameters);
-            }
-
-            @NonNull
-            @Override
-            public String toString() {
-                String str = clazz.getName() + '#' + name + getParametersString(parameters);
-                if (isExact) {
-                    return str + "#exact";
-                } else {
-                    return str;
-                }
-            }
-        }
+    public void setLoadPackageParam(XposedModuleInterface.PackageLoadedParam param) {
+        lpparam = param;
     }
 
     public static void log(String line) {
@@ -220,15 +112,12 @@ public final class XposedHelpers {
      *   <li>{@code android.app.ActivityThread$ResourcesKey}
      * </ul>
      *
-     * @param className   The class name in one of the formats mentioned above.
-     * @param classLoader The class loader.
+     * @param className The class name in one of the formats mentioned above.
      * @return A reference to the class.
      * @throws ClassNotFoundError In case the class was not found.
      */
-    public static Class<?> findClass(String className, ClassLoader classLoader) {
-        if (classLoader == null) {
-            classLoader = moduleInst.getClass().getClassLoader();
-        }
+    public static Class<?> findClass(String className) {
+        ClassLoader classLoader = lpparam.getClassLoader();
         try {
             return ClassUtils.getClass(classLoader, className, false);
         } catch (ClassNotFoundException e) {
@@ -240,13 +129,12 @@ public final class XposedHelpers {
      * Look up and return a class if it exists.
      * Like {@link #findClass}, but doesn't throw an exception if the class doesn't exist.
      *
-     * @param className   The class name.
-     * @param classLoader The class loader, or {@code null} for the boot class loader.
+     * @param className The class name.
      * @return A reference to the class, or {@code null} if it doesn't exist.
      */
-    public static Class<?> findClassIfExists(String className, ClassLoader classLoader) {
+    public static Class<?> findClassIfExists(String className) {
         try {
-            return findClass(className, classLoader);
+            return findClass(className);
         } catch (ClassNotFoundError e) {
             return null;
         }
@@ -332,7 +220,7 @@ public final class XposedHelpers {
     }
 
     /**
-     * Look up a method and hook it. See {@link #findAndHookMethod(String, ClassLoader, String, Object...)}
+     * Look up a method and hook it. See {@link #findAndHookMethod(String, String, Object...)}
      * for details.
      */
     public static CustomMethodUnhooker findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
@@ -340,7 +228,7 @@ public final class XposedHelpers {
             throw new IllegalArgumentException("no callback defined");
 
         MethodHook callback = (MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length - 1];
-        Method m = findMethodExact(clazz, methodName, getParameterClasses(clazz.getClassLoader(), parameterTypesAndCallback));
+        Method m = findMethodExact(clazz, methodName, getParameterClasses(parameterTypesAndCallback));
         return doHookMethod(m, callback);
     }
 
@@ -348,28 +236,27 @@ public final class XposedHelpers {
      * Look up a method and hook it. The last argument must be the callback for the hook.
      *
      * @param className                 The name of the class which implements the method.
-     * @param classLoader               The class loader for resolving the target and parameter classes.
      * @param methodName                The target method name.
      * @param parameterTypesAndCallback The parameter types of the target method, plus the callback.
      * @return An object which can be used to remove the callback again.
      * @throws NoSuchMethodError  In case the method was not found.
      * @throws ClassNotFoundError In case the target class or one of the parameter types couldn't be resolved.
      */
-    public static CustomMethodUnhooker findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
-        return findAndHookMethod(findClass(className, classLoader), methodName, parameterTypesAndCallback);
+    public static CustomMethodUnhooker findAndHookMethod(String className, String methodName, Object... parameterTypesAndCallback) {
+        return findAndHookMethod(findClass(className), methodName, parameterTypesAndCallback);
     }
 
     /**
      * Look up a method in a class and set it to accessible.
-     * See {@link #findMethodExact(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExact(String, String, Object...)} for details.
      */
     public static Method findMethodExact(Class<?> clazz, String methodName, Object... parameterTypes) {
-        return findMethodExact(clazz, methodName, getParameterClasses(clazz.getClassLoader(), parameterTypes));
+        return findMethodExact(clazz, methodName, getParameterClasses(parameterTypes));
     }
 
     /**
      * Look up and return a method if it exists.
-     * See {@link #findMethodExactIfExists(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExactIfExists(String, String, Object...)} for details.
      */
     public static Method findMethodExactIfExists(Class<?> clazz, String methodName, Object... parameterTypes) {
         try {
@@ -383,35 +270,33 @@ public final class XposedHelpers {
      * Look up a method in a class and set it to accessible.
      * The method must be declared or overridden in the given class.
      *
-     * <p>See {@link #findAndHookMethod(String, ClassLoader, String, Object...)} for details about
+     * <p>See {@link #findAndHookMethod(String, String, Object...)} for details about
      * the method and parameter type resolution.
      *
      * @param className      The name of the class which implements the method.
-     * @param classLoader    The class loader for resolving the target and parameter classes.
      * @param methodName     The target method name.
      * @param parameterTypes The parameter types of the target method.
      * @return A reference to the method.
      * @throws NoSuchMethodError  In case the method was not found.
      * @throws ClassNotFoundError In case the target class or one of the parameter types couldn't be resolved.
      */
-    public static Method findMethodExact(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
-        return findMethodExact(findClass(className, classLoader), methodName, getParameterClasses(classLoader, parameterTypes));
+    public static Method findMethodExact(String className, String methodName, Object... parameterTypes) {
+        return findMethodExact(findClass(className), methodName, getParameterClasses(parameterTypes));
     }
 
     /**
      * Look up and return a method if it exists.
-     * Like {@link #findMethodExact(String, ClassLoader, String, Object...)}, but doesn't throw an
+     * Like {@link #findMethodExact(String, String, Object...)}, but doesn't throw an
      * exception if the method doesn't exist.
      *
      * @param className      The name of the class which implements the method.
-     * @param classLoader    The class loader for resolving the target and parameter classes.
      * @param methodName     The target method name.
      * @param parameterTypes The parameter types of the target method.
      * @return A reference to the method, or {@code null} if it doesn't exist.
      */
-    public static Method findMethodExactIfExists(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
+    public static Method findMethodExactIfExists(String className, String methodName, Object... parameterTypes) {
         try {
-            return findMethodExact(className, classLoader, methodName, parameterTypes);
+            return findMethodExact(className, methodName, parameterTypes);
         } catch (ClassNotFoundError | NoSuchMethodError e) {
             return null;
         }
@@ -419,7 +304,7 @@ public final class XposedHelpers {
 
     /**
      * Look up a method in a class and set it to accessible.
-     * See {@link #findMethodExact(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExact(String, String, Object...)} for details.
      *
      * <p>This variant requires that you already have reference to all the parameter types.
      */
@@ -610,7 +495,7 @@ public final class XposedHelpers {
      * Retrieve classes from an array, where each element might either be a Class
      * already, or a String with the full class name.
      */
-    private static Class<?>[] getParameterClasses(ClassLoader classLoader, Object[] parameterTypesAndCallback) {
+    private static Class<?>[] getParameterClasses(Object[] parameterTypesAndCallback) {
         Class<?>[] parameterClasses = null;
         for (int i = parameterTypesAndCallback.length - 1; i >= 0; i--) {
             Object type = parameterTypesAndCallback[i];
@@ -627,7 +512,8 @@ public final class XposedHelpers {
             if (type instanceof Class)
                 parameterClasses[i] = (Class<?>) type;
             else if (type instanceof String)
-                parameterClasses[i] = findClass((String) type, classLoader);
+
+                parameterClasses[i] = findClass((String) type);
             else
                 throw new ClassNotFoundError("parameter type must either be specified as Class or String", null);
         }
@@ -666,15 +552,15 @@ public final class XposedHelpers {
 
     /**
      * Look up a constructor of a class and set it to accessible.
-     * See {@link #findMethodExact(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExact(String, String, Object...)} for details.
      */
     public static Constructor<?> findConstructorExact(Class<?> clazz, Object... parameterTypes) {
-        return findConstructorExact(clazz, getParameterClasses(clazz.getClassLoader(), parameterTypes));
+        return findConstructorExact(clazz, getParameterClasses(parameterTypes));
     }
 
     /**
      * Look up and return a constructor if it exists.
-     * See {@link #findMethodExactIfExists(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExactIfExists(String, String, Object...)} for details.
      */
     public static Constructor<?> findConstructorExactIfExists(Class<?> clazz, Object... parameterTypes) {
         try {
@@ -686,15 +572,15 @@ public final class XposedHelpers {
 
     /**
      * Look up a constructor of a class and set it to accessible.
-     * See {@link #findMethodExact(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExact(String, String, Object...)} for details.
      */
-    public static Constructor<?> findConstructorExact(String className, ClassLoader classLoader, Object... parameterTypes) {
-        return findConstructorExact(findClass(className, classLoader), getParameterClasses(classLoader, parameterTypes));
+    public static Constructor<?> findConstructorExact(String className, Object... parameterTypes) {
+        return findConstructorExact(findClass(className), getParameterClasses(parameterTypes));
     }
 
     /**
      * Look up and return a constructor if it exists.
-     * See {@link #findMethodExactIfExists(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExactIfExists(String, String, Object...)} for details.
      */
     public static Constructor<?> findConstructorExactIfExists(String className, ClassLoader classLoader, Object... parameterTypes) {
         try {
@@ -706,7 +592,7 @@ public final class XposedHelpers {
 
     /**
      * Look up a constructor of a class and set it to accessible.
-     * See {@link #findMethodExact(String, ClassLoader, String, Object...)} for details.
+     * See {@link #findMethodExact(String, String, Object...)} for details.
      */
     public static Constructor<?> findConstructorExact(Class<?> clazz, Class<?>... parameterTypes) {
         MemberCacheKey.Constructor key = new MemberCacheKey.Constructor(clazz, parameterTypes, true);
@@ -723,7 +609,7 @@ public final class XposedHelpers {
     }
 
     /**
-     * Look up a constructor and hook it. See {@link #findAndHookMethod(String, ClassLoader, String, Object...)}
+     * Look up a constructor and hook it. See {@link #findAndHookMethod(String, String, Object...)}
      * for details.
      */
     public static CustomMethodUnhooker findAndHookConstructor(Class<?> clazz, Object... parameterTypesAndCallback) {
@@ -731,7 +617,7 @@ public final class XposedHelpers {
             throw new IllegalArgumentException("no callback defined");
 
         MethodHook callback = (MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length - 1];
-        Constructor<?> m = findConstructorExact(clazz, getParameterClasses(clazz.getClassLoader(), parameterTypesAndCallback));
+        Constructor<?> m = findConstructorExact(clazz, getParameterClasses(parameterTypesAndCallback));
         return doHookConstructor(m, callback);
     }
 
@@ -744,15 +630,13 @@ public final class XposedHelpers {
             if (!hooked) {
                 moduleInst.hook(m, HighestPriorityHooker.class);
             }
-        }
-        else if (hook.mPriority < XposedInterface.PRIORITY_DEFAULT) {
+        } else if (hook.mPriority < XposedInterface.PRIORITY_DEFAULT) {
             hooked = LowestPriorityHooker.memberIsRegistered(m);
             unhooker = LowestPriorityHooker.addCallback(m, hook);
             if (!hooked) {
                 moduleInst.hook(m, LowestPriorityHooker.class);
             }
-        }
-        else {
+        } else {
             hooked = CustomHooker.memberIsRegistered(m);
             unhooker = CustomHooker.addCallback(m, hook);
             if (!hooked) {
@@ -772,15 +656,13 @@ public final class XposedHelpers {
             if (!hooked) {
                 moduleInst.hook(m, HighestPriorityHooker.class);
             }
-        }
-        else if (hook.mPriority < XposedInterface.PRIORITY_DEFAULT) {
+        } else if (hook.mPriority < XposedInterface.PRIORITY_DEFAULT) {
             hooked = LowestPriorityHooker.memberIsRegistered(m);
             unhooker = LowestPriorityHooker.addCallback(m, hook);
             if (!hooked) {
                 moduleInst.hook(m, LowestPriorityHooker.class);
             }
-        }
-        else {
+        } else {
             hooked = CustomHooker.memberIsRegistered(m);
             unhooker = CustomHooker.addCallback(m, hook);
             if (!hooked) {
@@ -793,11 +675,11 @@ public final class XposedHelpers {
 
 
     /**
-     * Look up a constructor and hook it. See {@link #findAndHookMethod(String, ClassLoader, String, Object...)}
+     * Look up a constructor and hook it. See {@link #findAndHookMethod(String, String, Object...)}
      * for details.
      */
     public static CustomMethodUnhooker findAndHookConstructor(String className, ClassLoader classLoader, Object... parameterTypesAndCallback) {
-        return findAndHookConstructor(findClass(className, classLoader), parameterTypesAndCallback);
+        return findAndHookConstructor(findClass(className), parameterTypesAndCallback);
     }
 
     /**
