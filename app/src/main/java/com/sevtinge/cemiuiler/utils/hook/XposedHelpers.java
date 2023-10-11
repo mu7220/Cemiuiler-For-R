@@ -163,6 +163,18 @@ public abstract class XposedHelpers extends HookerClassHelper {
     }
 
     /**
+     * Look up a field in a class and set it to accessible.
+     *
+     * @param clazz     The class name which either declares or inherits the field.
+     * @param fieldName The field name.
+     * @return A reference to the field.
+     * @throws NoSuchFieldError In case the field was not found.
+     */
+    public static Field findField(String clazz, String fieldName) {
+        return findField(findClass(clazz), fieldName);
+    }
+
+    /**
      * Look up and return a field if it exists.
      * Like {@link #findField}, but doesn't throw an exception if the field doesn't exist.
      *
@@ -170,7 +182,7 @@ public abstract class XposedHelpers extends HookerClassHelper {
      * @param fieldName The field name.
      * @return A reference to the field, or {@code null} if it doesn't exist.
      */
-    public static Field findFieldIfExists(Class<?> clazz, String fieldName) {
+    public static Field findFieldIfExists(String clazz, String fieldName) {
         try {
             return findField(clazz, fieldName);
         } catch (NoSuchFieldError e) {
@@ -224,10 +236,9 @@ public abstract class XposedHelpers extends HookerClassHelper {
      * for details.
      */
     public static CustomMethodUnhooker findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
-        if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length - 1] instanceof MethodHook))
+        if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length - 1] instanceof MethodHook callback))
             throw new IllegalArgumentException("no callback defined");
 
-        MethodHook callback = (MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length - 1];
         Method m = findMethodExact(clazz, methodName, getParameterClasses(parameterTypesAndCallback));
         return doHookMethod(m, callback);
     }
@@ -463,6 +474,16 @@ public abstract class XposedHelpers extends HookerClassHelper {
     }
 
     /**
+     * Hook all constructors of the specified class.
+     *
+     * @param className The class to check for constructors name.
+     * @param callback  The callback to be executed when the hooked constructors are called.
+     */
+    public static Set<CustomMethodUnhooker> hookAllConstructors(String className, MethodHook callback) {
+        return hookAllConstructors(findClass(className), callback);
+    }
+
+    /**
      * Hooks all methods with a certain name that were declared in the specified class. Inherited
      * methods and constructors are not considered. For constructors, use
      * {@link #hookAllConstructors} instead.
@@ -478,6 +499,19 @@ public abstract class XposedHelpers extends HookerClassHelper {
             if (method.getName().equals(methodName))
                 unhooks.add(doHookMethod(method, callback));
         return unhooks;
+    }
+
+    /**
+     * Hooks all methods with a certain name that were declared in the specified class. Inherited
+     * methods and constructors are not considered. For constructors, use
+     * {@link #hookAllConstructors} instead.
+     *
+     * @param className  The class to check for declared methods name.
+     * @param methodName The name of the method(s) to hook.
+     * @param callback   The callback to be executed when the hooked methods are called.
+     */
+    public static Set<CustomMethodUnhooker> hookAllMethods(String className, String methodName, MethodHook callback) {
+        return hookAllMethods(findClass(className), methodName, callback);
     }
 
     /**
@@ -613,12 +647,19 @@ public abstract class XposedHelpers extends HookerClassHelper {
      * for details.
      */
     public static CustomMethodUnhooker findAndHookConstructor(Class<?> clazz, Object... parameterTypesAndCallback) {
-        if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length - 1] instanceof MethodHook))
+        if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length - 1] instanceof MethodHook callback))
             throw new IllegalArgumentException("no callback defined");
 
-        MethodHook callback = (MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length - 1];
         Constructor<?> m = findConstructorExact(clazz, getParameterClasses(parameterTypesAndCallback));
         return doHookConstructor(m, callback);
+    }
+
+    /**
+     * Look up the name of a constructor and hook it. See {@link #findAndHookMethod(String, String, Object...)}
+     * for details.
+     */
+    public static CustomMethodUnhooker findAndHookConstructor(String clazz, Object... parameterTypesAndCallback) {
+        return findAndHookConstructor(findClass(clazz), parameterTypesAndCallback);
     }
 
     public static CustomMethodUnhooker doHookMethod(Method m, MethodHook hook) {
@@ -671,15 +712,6 @@ public abstract class XposedHelpers extends HookerClassHelper {
         }
 
         return unhooker;
-    }
-
-
-    /**
-     * Look up a constructor and hook it. See {@link #findAndHookMethod(String, String, Object...)}
-     * for details.
-     */
-    public static CustomMethodUnhooker findAndHookConstructor(String className, ClassLoader classLoader, Object... parameterTypesAndCallback) {
-        return findAndHookConstructor(findClass(className), parameterTypesAndCallback);
     }
 
     /**
@@ -1448,6 +1480,14 @@ public abstract class XposedHelpers extends HookerClassHelper {
     }
 
     /**
+     * Calls a static method of the given the name of class.
+     * See {@link #callStaticMethod(Class, String, Object...)}.
+     */
+    public static Object callStaticMethod(String clazz, String methodName, Object... args) {
+        return callStaticMethod(findClass(clazz), methodName, args);
+    }
+
+    /**
      * Calls a static method of the given class.
      * See {@link #callStaticMethod(Class, String, Object...)}.
      *
@@ -1466,6 +1506,14 @@ public abstract class XposedHelpers extends HookerClassHelper {
         } catch (InvocationTargetException e) {
             throw new InvocationTargetError(e.getCause());
         }
+    }
+
+    /**
+     * Calls a static method of the given the name of class.
+     * See {@link #callStaticMethod(Class, String, Object...)}.
+     */
+    public static Object callStaticMethod(String clazz, String methodName, Class<?>[] parameterTypes, Object... args) {
+        return callStaticMethod(findClass(clazz), methodName, parameterTypes, args);
     }
 
     /**
@@ -1515,6 +1563,14 @@ public abstract class XposedHelpers extends HookerClassHelper {
     }
 
     /**
+     * Creates a new instance of the given the name of class.
+     * See {@link #newInstance(Class, Object...)}.
+     */
+    public static Object newInstance(String clazz, Object... args) {
+        return newInstance(findClass(clazz), args);
+    }
+
+    /**
      * Creates a new instance of the given class.
      * See {@link #newInstance(Class, Object...)}.
      *
@@ -1535,6 +1591,14 @@ public abstract class XposedHelpers extends HookerClassHelper {
         } catch (InstantiationException e) {
             throw new InstantiationError(e.getMessage());
         }
+    }
+
+    /**
+     * Creates a new instance of the given the name of class.
+     * See {@link #newInstance(Class, Object...)}.
+     */
+    public static Object newInstance(String clazz, Class<?>[] parameterTypes, Object... args) {
+        return newInstance(findClass(clazz), parameterTypes, args);
     }
 
     //#################################################################################################

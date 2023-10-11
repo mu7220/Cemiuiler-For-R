@@ -1,13 +1,13 @@
 package com.sevtinge.cemiuiler.module.hook.systemui;
 
-import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogD;
 import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogI;
 
 import android.view.MotionEvent;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 
-import de.robv.android.xposed.XposedHelpers;
+import io.github.libxposed.api.XposedInterface;
 
 public class SwitchControlPanel extends BaseHook {
 
@@ -20,9 +20,9 @@ public class SwitchControlPanel extends BaseHook {
 
         findAndHookMethod(mControlPanelWindowManager, "dispatchToControlPanel", MotionEvent.class, float.class, new MethodHook() {
             @Override
-            protected void before(MethodHookParam param) {
-                float f = (float) param.args[1];
-                XposedHelpers.setFloatField(param.thisObject, "mDownX", f);
+            protected void before(XposedInterface.BeforeHookCallback param) {
+                float f = (float) param.getArgs()[1];
+                XposedHelpers.setFloatField(param.getThisObject(), "mDownX", f);
                 float mDownX = XposedHelpers.getFloatField(param.thisObject, "mDownX");
                 int i = (Float.compare(mDownX, f / 2.0f));
                 LogI(TAG, "mDownX：" + mDownX + "in before");

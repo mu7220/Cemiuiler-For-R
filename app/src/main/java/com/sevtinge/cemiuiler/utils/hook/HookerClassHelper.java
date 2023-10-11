@@ -80,7 +80,6 @@ public class HookerClassHelper {
     }
 
     public interface CustomMethodUnhooker {
-
         void unhook();
     }
 
