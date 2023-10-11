@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
-import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
 import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 
 import io.github.libxposed.api.XposedInterface.AfterHookCallback;
@@ -18,7 +16,7 @@ import io.github.libxposed.api.XposedInterface.AfterHookCallback;
 public class IconScaleHook extends BaseHook {
     @Override
     public void init() {
-        ModuleHelper.findAndHookMethod("com.miui.home.launcher.ShortcutIcon", lpparam.getClassLoader(), "restoreToInitState", new MethodHook() {
+        XposedHelpers.findAndHookMethod("com.miui.home.launcher.ShortcutIcon", "restoreToInitState", new MethodHook() {
             @Override
             protected void after(AfterHookCallback param) {
                 ViewGroup mIconContainer = (ViewGroup) XposedHelpers.getObjectField(param.getThisObject(), "mIconContainer");
@@ -29,7 +27,7 @@ public class IconScaleHook extends BaseHook {
             }
         });
 
-        ModuleHelper.findAndHookMethod("com.miui.home.launcher.ItemIcon", lpparam.getClassLoader(), "onFinishInflate", new MethodHook() {
+        XposedHelpers.findAndHookMethod("com.miui.home.launcher.ItemIcon", "onFinishInflate", new MethodHook() {
             @Override
             protected void after(AfterHookCallback param) {
                 float multx = (float) Math.sqrt(mPrefsMap.getInt("home_title_icon_scale", 100) / 100f);
@@ -91,7 +89,7 @@ public class IconScaleHook extends BaseHook {
             }
         });
 
-        ModuleHelper.findAndHookMethod("com.miui.home.launcher.ItemIcon", lpparam.getClassLoader(), "getIconLocation", new MethodHook() {
+        XposedHelpers.findAndHookMethod("com.miui.home.launcher.ItemIcon", "getIconLocation", new MethodHook() {
             @Override
             protected void after(AfterHookCallback param) {
                 float multx = (float) Math.sqrt(mPrefsMap.getInt("home_title_icon_scale", 100) / 100f);
@@ -103,7 +101,7 @@ public class IconScaleHook extends BaseHook {
             }
         });
 
-        ModuleHelper.findAndHookMethodSilently("com.miui.home.launcher.gadget.ClearButton", lpparam.getClassLoader(), "onCreate", new MethodHook() {
+        XposedHelpers.findAndHookMethodSilently("com.miui.home.launcher.gadget.ClearButton", "onCreate", new MethodHook() {
             @Override
             protected void after(AfterHookCallback param) {
                 ViewGroup mIconContainer = (ViewGroup) XposedHelpers.getObjectField(param.getThisObject(), "mIconContainer");

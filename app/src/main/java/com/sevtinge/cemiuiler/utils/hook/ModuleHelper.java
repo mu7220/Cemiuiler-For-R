@@ -19,10 +19,7 @@ import android.text.format.DateFormat;
 import androidx.annotation.Nullable;
 
 import com.sevtinge.cemiuiler.utils.Helpers;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.CustomMethodUnhooker;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
 
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -49,98 +46,6 @@ public class ModuleHelper {
             }
     }
 
-    public static void hookMethod(Method method, MethodHook callback) {
-        try {
-            XposedHelpers.doHookMethod(method, callback);
-        } catch (Throwable t) {
-            LogI("hookMethod", "Failed to hook " + method.getName() + " method");
-        }
-    }
-
-    public static CustomMethodUnhooker findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            return XposedHelpers.findAndHookMethod(className, classLoader, methodName, parameterTypesAndCallback);
-        } catch (Throwable t) {
-            LogI("findAndHookMethod", "Failed to hook " + methodName + " method in " + className);
-            return null;
-        }
-    }
-
-    public static CustomMethodUnhooker findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            return XposedHelpers.findAndHookMethod(clazz, methodName, parameterTypesAndCallback);
-        } catch (Throwable t) {
-            LogI("findAndHookMethod", "Failed to hook " + methodName + " method in " + clazz.getCanonicalName());
-            return null;
-        }
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean findAndHookMethodSilently(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookMethod(className, classLoader, methodName, parameterTypesAndCallback);
-            return true;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean findAndHookMethodSilently(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookMethod(clazz, methodName, parameterTypesAndCallback);
-            return true;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
-    public static void findAndHookConstructor(String className, ClassLoader classLoader, Object... parameterTypesAndCallback) {
-        try {
-            XposedHelpers.findAndHookConstructor(className, classLoader, parameterTypesAndCallback);
-        } catch (Throwable t) {
-            LogI("hookMethod", "Failed to hook constructor in " + className);
-        }
-    }
-
-    public static void hookAllConstructors(String className, ClassLoader classLoader, MethodHook callback) {
-        try {
-            Class<?> hookClass = XposedHelpers.findClassIfExists(className, classLoader);
-            if (hookClass == null || XposedHelpers.hookAllConstructors(hookClass, callback).size() == 0)
-                LogI("hookAllConstructors", "Failed to hook " + className + " constructor");
-        } catch (Throwable t) {
-            log(t);
-        }
-    }
-
-    public static void hookAllConstructors(Class<?> hookClass, MethodHook callback) {
-        try {
-            if (XposedHelpers.hookAllConstructors(hookClass, callback).size() == 0)
-                LogI("hookAllConstructors", "Failed to hook " + hookClass.getCanonicalName() + " constructor");
-        } catch (Throwable t) {
-            log(t);
-        }
-    }
-
-    public static void hookAllMethods(String className, ClassLoader classLoader, String methodName, MethodHook callback) {
-        try {
-            Class<?> hookClass = XposedHelpers.findClassIfExists(className, classLoader);
-            if (hookClass == null || XposedHelpers.hookAllMethods(hookClass, methodName, callback).size() == 0)
-                LogI("hookAllMethods", "Failed to hook " + methodName + " method in " + className);
-        } catch (Throwable t) {
-            log(t);
-        }
-    }
-
-    public static void hookAllMethods(Class<?> hookClass, String methodName, MethodHook callback) {
-        try {
-            if (XposedHelpers.hookAllMethods(hookClass, methodName, callback).size() == 0)
-                LogI("hookAllMethods", "Failed to hook " + methodName + " method in " + hookClass.getCanonicalName());
-        } catch (Throwable t) {
-            log(t);
-        }
-    }
-
     public static Object proxySystemProperties(String method, String prop, String val, ClassLoader classLoader) {
         return XposedHelpers.callStaticMethod(XposedHelpers.findClassIfExists("android.os.SystemProperties", classLoader),
             method, prop, val);
@@ -149,39 +54,6 @@ public class ModuleHelper {
     public static Object proxySystemProperties(String method, String prop, int val, ClassLoader classLoader) {
         return XposedHelpers.callStaticMethod(XposedHelpers.findClassIfExists("android.os.SystemProperties", classLoader),
             method, prop, val);
-    }
-
-    public static boolean hookAllMethodsSilently(String className, ClassLoader classLoader, String methodName, MethodHook callback) {
-        try {
-            Class<?> hookClass = XposedHelpers.findClassIfExists(className, classLoader);
-            return hookClass != null && XposedHelpers.hookAllMethods(hookClass, methodName, callback).size() > 0;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
-    public static boolean hookAllMethodsSilently(Class<?> hookClass, String methodName, MethodHook callback) {
-        try {
-            return hookClass != null && XposedHelpers.hookAllMethods(hookClass, methodName, callback).size() > 0;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
-    public static Object getStaticObjectFieldSilently(Class <?> clazz, String fieldName) {
-        try {
-            return XposedHelpers.getStaticObjectField(clazz, fieldName);
-        } catch (Throwable t) {
-            return NOT_EXIST_SYMBOL;
-        }
-    }
-
-    public static Object getObjectFieldSilently(Object obj, String fieldName) {
-        try {
-            return XposedHelpers.getObjectField(obj, fieldName);
-        } catch (Throwable t) {
-            return NOT_EXIST_SYMBOL;
-        }
     }
 
     public static Context findContext() {

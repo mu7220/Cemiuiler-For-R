@@ -54,20 +54,20 @@ public class ResourcesHook {
     private void applyHooks() {
         if (hooksApplied) return;
         hooksApplied = true;
-        ModuleHelper.findAndHookMethod(Resources.class, "getInteger", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getLayout", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getFraction", int.class, int.class, int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getBoolean", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getDimension", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getDimensionPixelOffset", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getDimensionPixelSize", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getText", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getString", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getDrawableForDensity", int.class, int.class, Resources.Theme.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getIntArray", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getStringArray", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getTextArray", int.class, mReplaceHook);
-        ModuleHelper.findAndHookMethod(Resources.class, "getAnimation", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getInteger", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getLayout", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getFraction", int.class, int.class, int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getBoolean", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getDimension", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getDimensionPixelOffset", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getDimensionPixelSize", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getText", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getString", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getDrawableForDensity", int.class, int.class, Resources.Theme.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getIntArray", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getStringArray", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getTextArray", int.class, mReplaceHook);
+        XposedHelpers.findAndHookMethod(Resources.class, "getAnimation", int.class, mReplaceHook);
     }
 
     public int addResource(String resName, int resId) {

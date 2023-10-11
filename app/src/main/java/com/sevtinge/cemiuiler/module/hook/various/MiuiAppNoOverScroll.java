@@ -3,8 +3,6 @@ package com.sevtinge.cemiuiler.module.hook.various;
 import android.view.View;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
-import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
 import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 import com.sevtinge.cemiuiler.utils.log.XposedLogUtils;
 
@@ -30,7 +28,7 @@ public class MiuiAppNoOverScroll extends BaseHook {
             };
 
             if (mSpringBackCls != null) {
-                ModuleHelper.hookAllConstructors(mSpringBackCls, new MethodHook() {
+                XposedHelpers.hookAllConstructors(mSpringBackCls, new MethodHook() {
                     @Override
                     protected void after(AfterHookCallback param) {
                         XposedHelpers.setBooleanField(param.getThisObject(), "mSpringBackEnable", false);
@@ -42,7 +40,7 @@ public class MiuiAppNoOverScroll extends BaseHook {
 
 
             if (mRemixRvCls != null) {
-                ModuleHelper.hookAllConstructors(mRemixRvCls, new MethodHook() {
+                XposedHelpers.hookAllConstructors(mRemixRvCls, new MethodHook() {
                     @Override
                     protected void after(AfterHookCallback param) {
                         ((View) param.getThisObject()).setOverScrollMode(View.OVER_SCROLL_NEVER);

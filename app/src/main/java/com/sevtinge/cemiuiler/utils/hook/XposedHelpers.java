@@ -19,6 +19,8 @@
  */
 package com.sevtinge.cemiuiler.utils.hook;
 
+import static com.sevtinge.cemiuiler.utils.log.AndroidLogUtils.LogI;
+
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.util.Log;
@@ -116,13 +118,20 @@ public abstract class XposedHelpers extends HookerClassHelper {
      * @return A reference to the class.
      * @throws ClassNotFoundError In case the class was not found.
      */
-    public static Class<?> findClass(String className) {
-        ClassLoader classLoader = lpparam.getClassLoader();
+    public static Class<?> findClass(String className, ClassLoader classLoader) {
+        if (classLoader == null) {
+            classLoader = moduleInst.getClass().getClassLoader();
+        }
         try {
             return ClassUtils.getClass(classLoader, className, false);
         } catch (ClassNotFoundException e) {
             throw new ClassNotFoundError(e);
         }
+    }
+
+    public static Class<?> findClass(String className) {
+        ClassLoader classLoader = lpparam.getClassLoader();
+        return findClass(className, classLoader);
     }
 
     /**
@@ -132,6 +141,14 @@ public abstract class XposedHelpers extends HookerClassHelper {
      * @param className The class name.
      * @return A reference to the class, or {@code null} if it doesn't exist.
      */
+    public static Class<?> findClassIfExists(String className, ClassLoader classLoader) {
+        try {
+            return findClass(className, classLoader);
+        } catch (ClassNotFoundError e) {
+            return null;
+        }
+    }
+
     public static Class<?> findClassIfExists(String className) {
         try {
             return findClass(className);
@@ -255,6 +272,24 @@ public abstract class XposedHelpers extends HookerClassHelper {
      */
     public static CustomMethodUnhooker findAndHookMethod(String className, String methodName, Object... parameterTypesAndCallback) {
         return findAndHookMethod(findClass(className), methodName, parameterTypesAndCallback);
+    }
+
+    public static void hookMethod(Method method, MethodHook callback) {
+        try {
+            XposedHelpers.doHookMethod(method, callback);
+        } catch (Throwable t) {
+            LogI("hookMethod", "Failed to hook " + method.getName() + " method");
+        }
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public static boolean findAndHookMethodSilently(String className, String methodName, Object... parameterTypesAndCallback) {
+        try {
+            XposedHelpers.findAndHookMethod(className, methodName, parameterTypesAndCallback);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     /**

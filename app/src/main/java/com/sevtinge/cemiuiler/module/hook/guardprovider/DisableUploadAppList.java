@@ -1,8 +1,6 @@
 package com.sevtinge.cemiuiler.module.hook.guardprovider;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
-import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
 import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 
 import org.json.JSONArray;
@@ -61,7 +59,7 @@ public class DisableUploadAppList extends BaseHook {
                 logI("Info: getAllUnSystemAppsStatus method found.");
             }
 
-            ModuleHelper.hookMethod(getAllUnSystemAppsStatus, new MethodHook() {
+            XposedHelpers.hookMethod(getAllUnSystemAppsStatus, new MethodHook() {
                 @Override
                 protected void before(final BeforeHookCallback methodHookParam) throws Throwable {
                     List list = (List) methodHookParam.getArgs()[0];

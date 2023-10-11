@@ -5,8 +5,6 @@ import android.content.pm.ApplicationInfo;
 import com.sevtinge.cemiuiler.R;
 import com.sevtinge.cemiuiler.XposedInit;
 import com.sevtinge.cemiuiler.module.base.SystemUIHook;
-import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper.MethodHook;
-import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
 import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 
 import io.github.libxposed.api.XposedInterface.AfterHookCallback;
@@ -26,7 +24,7 @@ public class NotificationVolumeSeparateSlider extends SystemUIHook {
     public void init() {
         initRes();
 
-        ModuleHelper.hookAllMethods(mPluginLoaderClass, "getClassLoader", new MethodHook() {
+        XposedHelpers.hookAllMethods(mPluginLoaderClass, "getClassLoader", new MethodHook() {
             @Override
             protected void after(AfterHookCallback param) {
                 ApplicationInfo appInfo = (ApplicationInfo) param.getArgs()[0];
@@ -35,7 +33,7 @@ public class NotificationVolumeSeparateSlider extends SystemUIHook {
                     if (pluginLoader == null) pluginLoader = (ClassLoader) param.getResult();
 
                     mMiuiVolumeDialogImpl = findClassIfExists("com.android.systemui.miui.volume.MiuiVolumeDialogImpl", pluginLoader);
-                    ModuleHelper.hookAllMethods(mMiuiVolumeDialogImpl, "addColumn", new MethodHook() {
+                    XposedHelpers.hookAllMethods(mMiuiVolumeDialogImpl, "addColumn", new MethodHook() {
                         @Override
                         protected void before(BeforeHookCallback param) {
                             if (param.getArgs().length != 4) return;

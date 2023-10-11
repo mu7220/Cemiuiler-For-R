@@ -2,7 +2,7 @@ package com.sevtinge.cemiuiler.module.hook.packageinstaller;
 
 import com.sevtinge.cemiuiler.module.base.BaseHook;
 import com.sevtinge.cemiuiler.utils.hook.HookerClassHelper;
-import com.sevtinge.cemiuiler.utils.hook.ModuleHelper;
+import com.sevtinge.cemiuiler.utils.hook.XposedHelpers;
 
 public class InstallSource extends BaseHook {
 
@@ -13,8 +13,7 @@ public class InstallSource extends BaseHook {
 
         mInstallSourcePackageName = mPrefsMap.getString("miui_package_installer_install_source", "com.android.fileexplorer");
 
-        ModuleHelper.findAndHookMethodSilently("com.miui.packageInstaller.InstallStart",
-            lpparam.getClassLoader(),
+        XposedHelpers.findAndHookMethodSilently("com.miui.packageInstaller.InstallStart",
             "getCallingPackage",
             HookerClassHelper.returnConstant(mInstallSourcePackageName));
     }
