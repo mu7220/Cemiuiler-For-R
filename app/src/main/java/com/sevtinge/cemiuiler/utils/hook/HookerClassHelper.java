@@ -14,7 +14,7 @@ import io.github.libxposed.api.annotations.AfterInvocation;
 import io.github.libxposed.api.annotations.BeforeInvocation;
 import io.github.libxposed.api.annotations.XposedHooker;
 
-public class HookerClassHelper {
+public class HookerClassHelper extends XposedAdd {
     interface BeforeMethodCallback {
         void beforeHook(XposedInterface.BeforeHookCallback callback);
     }
