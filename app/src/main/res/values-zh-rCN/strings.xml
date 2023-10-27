@@ -321,12 +321,11 @@
     <string name="system_framework_other_use_original_animation">过渡动画使用原生样式</string>
     <string name="system_framework_other_speed_install">快速安装</string>
     <string name="system_framework_other_speed_install_desc">安装至运行内存以提升安装速度，需要系统底层支持</string>
-    <string name="system_framework_other_thermal_brightness">禁止自动降亮度</string>
-    <string name="system_framework_other_thermal_brightness_more">仅限因温度导致的自动降亮度</string>
+    <string name="system_framework_other_thermal_brightness">禁止自动降低屏幕亮度</string>
+    <string name="system_framework_other_thermal_brightness_more">仅限非温控导致的自动降低屏幕亮度</string>
     <string name="system_framework_other_disable_cleaner">禁止杀后台应用</string>
     <string name="system_framework_other_disable_cleaner_desc">实验性功能，可能导致运行内存占用异常</string>
     <string name="system_framework_disable_72h_verify">禁用每 72 小时验证锁屏密码</string>
-    <string name="system_framework_disable_private_watermark">禁用测试版本水印</string>
     <!--核心破解-->
     <string name="system_framework_corepatch_title">包管理服务</string>
     <string name="system_framework_core_patch_downgr">允许降级安装应用</string>
@@ -748,7 +747,10 @@
     <string name="updater">系统更新</string>
     <string name="updater_fuck_vab">移除 OTA 验证</string>
     <string name="updater_fuck_vab_desc">仅支持 VAB 设备，其他非 VAB 设备请不要开启！\n- 无需内测权限即可刷入完整内测卡刷包\n- 跨不同版本类型刷入后建议清除数据\n- 不支持任何非官方 ROM 使用\n- 此功能有一定危险性，请在了解 Fastboot 操作后再评估是否开启</string>
-    <string name="updater_miui_version">伪装 MIUI 版本</string>
+    <string name="updater_version_mode">伪装类型</string>
+    <string name="updater_big_version">伪装大版本</string>
+    <string name="updater_big_version_desc">伪装 Xiaomi HyperOS 版本时需要填写的项目，默认为 V816</string>
+    <string name="updater_miui_version">伪装版本</string>
     <string name="updater_miui_version_desc">仅对系统更新修改，可在一定程度上屏蔽系统更新</string>
     <string name="updater_device">伪装机型</string>
     <string name="updater_device_desc">输入目标设备的机型代号以指定机型，可用于获取其他机型的 ROM 包，该功能极度危险</string>
@@ -898,6 +900,8 @@
     <string name="home_drawer_editor_desc">移除抽屉栏内应用分页的 “编辑” 按钮</string>
     <string name="home_drawer_blur">抽屉模糊</string>
     <string name="home_drawer_blur_desc">需将应用程序抽屉的背景透明度设置为 100%</string>
+    <string name="home_drawer_pinyin">按拼音顺序排列</string>
+    <string name="home_drawer_pinyin_more">非简体中文语言时抽屉内应用仍按照拼音排列</string>
 
     <string name="home_title">图标与标题</string>
     <string name="home_title_icon_title">图标</string>
@@ -907,7 +911,7 @@
     <string name="home_title_title_marquee_desc">过长的应用名称将以滚动进行显示，不再使用换行</string>
     <string name="home_title_title_new_install">禁止新安装软件显示指示标</string>
     <string name="home_title_drawer_font_hidden">隐藏所有应用标题</string>
-    <string name="home_title_drawer_font_hidden_more">抽屉内应用标题也会被隐藏，否则请使用\"文本大小\"进行调整</string>
+    <string name="home_title_drawer_font_hidden_more">抽屉内应用标题也会被隐藏，如需保留抽屉内应用标题，请使用 “文本大小” 进行调整</string>
     <string name="home_title_title_new_install_more">安装新应用时不显示应用标题旁边的指示标</string>
     <string name="home_title_font_size">文本大小</string>
     <string name="home_title_title_color">文本颜色</string>
@@ -918,6 +922,9 @@
     <string name="home_title_icon_scale">图标缩放</string>
     <string name="home_title_disable_hide_file">禁止隐藏 \"文件\" 图标</string>
     <string name="home_title_disable_hide_theme">禁止隐藏 \"主题壁纸\" 图标</string>
+    <string name="home_title_custom_anim_param">自定义动画曲线</string>
+    <string name="home_title_custom_anim_param_damping_title">阻尼</string>
+    <string name="home_title_custom_anim_param_stiffness_title">刚度</string>
 
     <string name="home_recent">最近任务</string>
     <string name="home_recent_animation_speed">动画速度</string>
@@ -1173,6 +1180,7 @@
     <!--弹幕通知-->
     <string name="barrage">弹幕通知</string>
     <string name="barrage_any_barrage">允许所有应用使用弹幕通知</string>
+    <string name="barrage_custom_barrage_length">自定义弹幕长度</string>
     <!--Joyose-->
     <string name="joyose">Joyose</string>
     <string name="joyose_cloud_control_title">云控</string>
@@ -1357,7 +1365,7 @@
     <string name="tip_5">Tip: 猜猜下一次看到这条 Tip 是什么时候？</string>
     <string name="tip_6">Tip: Make MIUI Great Again!</string>
     <string name="tip_7">Tip: 关注绀漓喵，关注绀漓谢谢喵~ (Github@sevtinge 或者 哔哩哔哩@绀漓丨Sevtinge)</string>
-    <string name="tip_8">Tip: 绀漓到底是男生还是女生？</string>
+    <string name="tip_8">Tip: 理想中的乌托邦并不存在于现实中。</string>
     <string name="tip_9">Tip: 三江市趋于崩溃。</string>
     <string name="tip_10">Tip: 啊，这个世界真美好......       可惜这份美好不属于绀漓。</string>
     <string name="tip_11">Tip: 我保留了一些 bug，这样你才知道你用的是 Cemiuiler 。</string>

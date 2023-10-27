@@ -13,6 +13,21 @@
     <string name="system_ui_display_toast_title" translatable="false">Toast</string>
     <string name="summary_collapsed_preference_list" translatable="false">%1$s%2$s</string>
     <string name="networkboost" translatable="false">NetworkBoost</string>
+
+    <string name="home_title_custom_anim_param_1_title" translatable="false">BREAK_OPEN</string>
+    <string name="home_title_custom_anim_param_2_title" translatable="false">OPEN_FROM_HOME</string>
+    <string name="home_title_custom_anim_param_3_title" translatable="false">OPEN_FROM_RECENTS</string>
+    <string name="home_title_custom_anim_param_4_title" translatable="false">CLOSE_TO_RECENTS</string>
+    <string name="home_title_custom_anim_param_5_title" translatable="false">CLOSE_TO_HOME</string>
+    <string name="home_title_custom_anim_param_6_title" translatable="false">CLOSE_FROM_FEED</string>
+    <string name="home_title_custom_anim_param_7_title" translatable="false">APP_TO_APP</string>
+    <string name="home_title_custom_anim_param_8_title" translatable="false">START_FIRST_TASK</string>
+    <string name="home_title_custom_anim_param_RECT_CENTERX_title" translatable="false">RECT_CENTERX</string>
+    <string name="home_title_custom_anim_param_RECT_CENTERY_title" translatable="false">RECT_CENTERY</string>
+    <string name="home_title_custom_anim_param_RECT_WIDTH_title" translatable="false">RECT_WIDTH</string>
+    <string name="home_title_custom_anim_param_RECT_RATIO_title" translatable="false">RECT_RATIO</string>
+    <string name="home_title_custom_anim_param_RADIUS_title" translatable="false">RADIUS</string>
+    <string name="home_title_custom_anim_param_ALPHA_title" translatable="false">ALPHA</string>
     <!--Introduction to Xposed Modules-->
     <string name="xposed_description">Make MIUI Great Again!</string>
 
@@ -304,8 +319,8 @@
     <string name="system_framework_other_use_original_animation">Transition animations use native styles</string>
     <string name="system_framework_other_speed_install">Speed Install</string>
     <string name="system_framework_other_speed_install_desc">Install to running memory to speed up installation</string>
-    <string name="system_framework_other_thermal_brightness">Prohibit automatic dimming</string>
-    <string name="system_framework_other_thermal_brightness_more">Automatic brightness reduction due to temperature only</string>
+    <string name="system_framework_other_thermal_brightness">Disable automatic screen brightness reduction</string>
+    <string name="system_framework_other_thermal_brightness_more">Only automatically reduces screen brightness not caused by temperature control</string>
     <string name="system_framework_other_disable_cleaner">Disable kill background apps</string>
     <string name="system_framework_other_disable_cleaner_desc">Experimental features, may cause running memory usage abnormally</string>
     <string name="system_framework_disable_72h_verify">Disable lock screen verify when per 72 hours</string>
@@ -712,7 +727,10 @@
     <string name="updater">Updater</string>
     <string name="updater_fuck_vab">Remove OTA verification</string>
     <string name="updater_fuck_vab_desc">Only VAB devices are supported, please do not enable other non-VAB devices!\n- You can swipe into the complete internal test card swiping package without internal test permissions\n- It is recommended to clear data after flashing across different version types\n- Does not support any unofficial ROM usage\n- This function is dangerous, please evaluate whether to enable it after understanding the operation of Fastboot</string>
-    <string name="updater_miui_version">Fake MIUI version for Updater</string>
+    <string name="updater_version_mode">Disguise type</string>
+    <string name="updater_big_version">Fake large version</string>
+    <string name="updater_big_version_desc">Items that need to be filled in when disguising the Xiaomi HyperOS version, the default is V816</string>
+    <string name="updater_miui_version">Fake version for Updater</string>
     <string name="updater_miui_version_desc">Only modify the system update, which can shield the system update to a certain extent</string>
     <string name="updater_device">Fake device for Updater</string>
     <string name="updater_device_desc">Enter the model code of the target device to specify the model, which can be used to obtain ROM packages for other models, which is extremely dangerous</string>
@@ -859,6 +877,8 @@
     <string name="home_drawer_editor_desc">Removed the \"Edit\" button from the Apps tab in the drawer</string>
     <string name="home_drawer_blur">Enable All Apps Container View Blur</string>
     <string name="home_drawer_blur_desc">Please set app drawer background transparency to 100% to use this feature</string>
+    <string name="home_drawer_pinyin">Arranged in pinyin order</string>
+    <string name="home_drawer_pinyin_more">When the language is not Simplified Chinese, the apps in the drawer are still arranged according to Pinyin</string>
     <string name="home_title">Icon and Title</string>
     <string name="home_title_icon_title">Icon</string>
     <string name="home_title_bigicon_title">Big icon</string>
@@ -867,7 +887,7 @@
     <string name="home_title_title_marquee_desc">App names that are too long will be scrolled instead of wrapping</string>
     <string name="home_title_title_new_install">New Install App Dont show Indicator</string>
     <string name="home_title_drawer_font_hidden">Hide all app titles</string>
-    <string name="home_title_drawer_font_hidden_more">The app title inside the drawer will also be hidden, otherwise please use \"Font size\" to adjust it</string>
+    <string name="home_title_drawer_font_hidden_more">The app title in the drawer will also be hidden.\nIf you want to keep the app title in the drawer, please use \"Font Size\" to adjust it.</string>
     <string name="home_title_title_new_install_more">Do not display the indicator next to the application title when installing a new application</string>
     <string name="home_title_font_size">Font size</string>
     <string name="home_title_title_color">Title color</string>
@@ -878,6 +898,9 @@
     <string name="home_title_icon_scale">Icons scaling</string>
     <string name="home_title_disable_hide_file">Disable hiding the \"file\" icon</string>
     <string name="home_title_disable_hide_theme">Do not hide \"theme manager\" icon</string>
+    <string name="home_title_custom_anim_param">Custom Animation Parameter</string>
+    <string name="home_title_custom_anim_param_damping_title">Damping</string>
+    <string name="home_title_custom_anim_param_stiffness_title">Stiffness</string>
 
     <string name="home_recent">Recent</string>
     <string name="home_recent_animation_speed">Animation speed</string>
@@ -1132,6 +1155,7 @@
     <!--Barrage-->
     <string name="barrage">Barrage</string>
     <string name="barrage_any_barrage">Allow all apps use barrage</string>
+    <string name="barrage_custom_barrage_length">Custom barrage length</string>
     <!--Joyose-->
     <string name="joyose">Joyose</string>
     <string name="joyose_cloud_control_title">Cloud Control</string>
@@ -1285,7 +1309,6 @@
     <string name="cemiuiler_restart_quick">Quickly restart apps</string>
     <string name="location_add">Add</string>
     <string name="location_delete">Delete</string>
-    <string name="system_framework_disable_private_watermark">Disable Private Watermark</string>
     <!--Tip-->
     <string name="tip_0">Tip: Here\'s a tip!</string>
     <string name="tip_1">Tip: You can support us by donating in \"About - Support\".</string>
@@ -1295,7 +1318,7 @@
     <string name="tip_5">Tip: Guess how many more times you have to see this tip again?</string>
     <string name="tip_6">Tip: Make MIUI Great Again!</string>
     <string name="tip_7">Tip: Welcome to follow Github@sevtinge or Bilibili@绀漓丨Sevtinge.</string>
-    <string name="tip_8">Tip: Is Sevtinge a boy or a girl?</string>
+    <string name="tip_8">Tip: The ideal Utopia does not exist in reality.</string>
     <string name="tip_9">Tip: Sanjiang City tends to collapse.</string>
     <string name="tip_10">Tip: Ah, this world is so beautiful…       It\'s a pity that this beauty does not belong to Sevtinge.</string>
     <string name="tip_11">Tip: I\'ve kept some bugs so you know you\'re using Cemiuiler.</string>

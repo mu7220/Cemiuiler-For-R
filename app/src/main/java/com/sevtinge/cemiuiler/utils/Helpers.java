@@ -341,11 +341,11 @@ public class Helpers {
     public static void hookAllConstructors(Class<?> hookClass, MethodHook callback) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                XposedLogUtils.INSTANCE.logI(getCallerMethod(), "Success to hook " + hookClass.getPackageName() + "/" + hookClass.getCanonicalName() + " constructor");
+                XposedLogUtils.logI(getCallerMethod(), "Success to hook " + hookClass.getPackageName() + "/" + hookClass.getCanonicalName() + " constructor");
             }
             if (XposedBridge.hookAllConstructors(hookClass, callback).size() == 0)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    XposedLogUtils.INSTANCE.logI(getCallerMethod(), "Failed to hook " + hookClass.getPackageName() + "/" + hookClass.getCanonicalName() + " constructor");
+                    XposedLogUtils.logI(getCallerMethod(), "Failed to hook " + hookClass.getPackageName() + "/" + hookClass.getCanonicalName() + " constructor");
                 }
         } catch (Throwable t) {
             LogD("hookAllMethods", hookClass + " is abnormal", t);
@@ -613,10 +613,10 @@ public class Helpers {
             File apkPath = new File(lpparam.appInfo.sourceDir);
             Object pkg = XposedHelpers.callMethod(parser, "parsePackage", apkPath, 0);
             String versionName = (String) XposedHelpers.getObjectField(pkg, "mVersionName");
-            XposedLogUtils.INSTANCE.logI("getPackageVersionName", lpparam + " versionName is " + versionName);
+            XposedLogUtils.logI("getPackageVersionName", lpparam + " versionName is " + versionName);
             return versionName;
         } catch (Throwable e) {
-            XposedLogUtils.INSTANCE.logW("getPackageVersionName", e);
+            XposedLogUtils.logW("getPackageVersionName", e);
             return "null";
         }
     }
@@ -628,61 +628,11 @@ public class Helpers {
             File apkPath = new File(lpparam.appInfo.sourceDir);
             Object pkg = XposedHelpers.callMethod(parser, "parsePackage", apkPath, 0);
             int versionCode = XposedHelpers.getIntField(pkg, "mVersionCode");
-            XposedLogUtils.INSTANCE.logI("getPackageVersionCode", lpparam + " versionCode is " + versionCode);
+            XposedLogUtils.logI("getPackageVersionCode", lpparam + " versionCode is " + versionCode);
             return versionCode;
         } catch (Throwable e) {
-            XposedLogUtils.INSTANCE.logW("getPackageVersionCode", e);
+            XposedLogUtils.logW("getPackageVersionCode", e);
             return -1;
         }
     }
-
-    public static int constrain(int amount, int low, int high) {
-        return amount < low ? low : (Math.min(amount, high));
-    }
-
-    public static float constrain(float amount, float low, float high) {
-        return amount < low ? low : (Math.min(amount, high));
-    }
-
-    public static float lerp(float start, float stop, float amount) {
-        return start + (stop - start) * amount;
-    }
-
-    public static float lerp(int start, int stop, float amount) {
-        return lerp((float) start, (float) stop, amount);
-    }
-
-    public static float lerpInv(float a, float b, float value) {
-        return a != b ? ((value - a) / (b - a)) : 0.0f;
-    }
-
-    public static float saturate(float value) {
-        return constrain(value, 0.0f, 1.0f);
-    }
-
-    public static float lerpInvSat(float a, float b, float value) {
-        return saturate(lerpInv(a, b, value));
-    }
-
-    public static float norm(float start, float stop, float value) {
-        return (value - start) / (stop - start);
-    }
-
-    private static float sq(float f) {
-        return f * f;
-    }
-
-    public static float exp(float f) {
-        return (float) Math.exp(f);
-    }
-
-    public static float convertGammaToLinearFloat(float i, int max, float f, float f2) {
-        float norm = norm(0.0f, max, i);
-        float R = 0.4f;
-        float A = 0.2146f;
-        float B = 0.2847f;
-        float C = 0.4719f;
-        return lerp(f, f2, constrain(norm <= R ? sq(norm / R) : exp((norm - C) / A) + B, 0.0f, 12.0f) / 12.0f);
-    }
-
 }

@@ -213,8 +213,8 @@
     <string name="link_open_mode_mi">Navegador Xiaomi</string>
     <string name="app_sort_running">Classificação padrão</string>
     <string name="app_sort_name">Nome do app</string>
-    <string name="app_sort_frequency">Frequência de uso</string>
-    <string name="app_sort_storage">Uso do armazenamento</string>
+    <string name="app_sort_frequency">Recentemente usado</string>
+    <string name="app_sort_storage">Armazenamento usado</string>
     <string name="app_sort_install">Data de instalação</string>
     <string name="array_bluetooth_tile_style_3rows">Três blocos grandes</string>
     <string name="array_bluetooth_tile_style_2rows2cols"> Um bloco grande e dois pequenos</string>
@@ -269,7 +269,7 @@
     <string name="phone_n28_desc">Suporte Banda N28 (NR)</string>
     <string name="phone_n5_n8">Banda N5/N8</string>
     <string name="phone_n5_n8_desc">Digite *#*#65686633#*#* na interface de discagem para suportar a banda N5/N8. Se mostrar \"ativar modo N5 e N8\", o recurso será ativado com sucesso.</string>
-    <string name="system_framework_screen_all_rotations">Este recurso é um recurso experimental com alta instabilidade</string>
+    <string name="system_framework_screen_all_rotations">Rotação da tela</string>
     <string name="system_framework_allow_untrusted_touch">Permitir toque não confiável</string>
     <string name="system_framework_allow_uninstall">Permitir desinstalar alguns apps pré-instalados</string>
     <string name="system_framework_allow_uninstall_desc">Este recurso é perigoso</string>
@@ -290,6 +290,8 @@
     <string name="system_framework_other_use_original_animation">Animações de transição usam estilos nativos</string>
     <string name="system_framework_other_speed_install">Instalação rápida</string>
     <string name="system_framework_other_speed_install_desc">Instale na memória em execução para acelerar a instalação</string>
+    <string name="system_framework_other_thermal_brightness">Desativar a redução automática de brilho da tela</string>
+    <string name="system_framework_other_thermal_brightness_more">Reduz automaticamente apenas o brilho da tela não causado pelo controle de temperatura</string>
     <string name="system_framework_other_disable_cleaner">Desativar o encerramento de apps em segundo plano</string>
     <string name="system_framework_other_disable_cleaner_desc">Recursos experimentais, podem causar uso anormal de memória em execução</string>
     <string name="system_framework_disable_72h_verify">Desativar verificação da tela de bloqueio por 72 horas</string>
@@ -842,6 +844,8 @@
     <string name="home_drawer_editor_desc">Remover o botão \"Editar\" da guia de apps na gaveta</string>
     <string name="home_drawer_blur">Ativar blur de exibição de contêiner de todos os apps</string>
     <string name="home_drawer_blur_desc">Por favor, defina a transparência da gaveta de apps de fundo para 100% para usar este recurso</string>
+    <string name="home_drawer_pinyin">Organizado em ordem Pinyin</string>
+    <string name="home_drawer_pinyin_more">Quando o idioma não é o Chinês Simplificado, os apps na gaveta ainda são organizados de acordo com o Pinyin</string>
     <string name="home_title">Ícone e título</string>
     <string name="home_title_icon_title">Ícone</string>
     <string name="home_title_bigicon_title">Ícone grande</string>
@@ -849,6 +853,8 @@
     <string name="home_title_title_marquee">Rolagem de texto</string>
     <string name="home_title_title_marquee_desc">Nomes de apps muito longos serão rolados em vez de agrupados</string>
     <string name="home_title_title_new_install">Não mostrar novo indicador de instalação do app</string>
+    <string name="home_title_drawer_font_hidden">Ocultar todos os nomes dos apps</string>
+    <string name="home_title_drawer_font_hidden_more">O título do app na gaveta também ficará oculto.\nSe você quiser manter o título do app na gaveta, use Tamanho da fonte para ajustá-lo.</string>
     <string name="home_title_title_new_install_more">Não exiba o indicador próximo ao nome do app ao instalar um novo app</string>
     <string name="home_title_font_size">Tamanho da fonte</string>
     <string name="home_title_title_color">Cor do título</string>
@@ -859,6 +865,9 @@
     <string name="home_title_icon_scale">Dimensionamento de ícones</string>
     <string name="home_title_disable_hide_file">Desative a ocultação do ícone \"arquivo\"</string>
     <string name="home_title_disable_hide_theme">Não esconda o ícone do \"gerenciador de temas\"</string>
+    <string name="home_title_custom_anim_param">Parâmetro de animação personalizado</string>
+    <string name="home_title_custom_anim_param_damping_title">Amortecimento</string>
+    <string name="home_title_custom_anim_param_stiffness_title">Rigidez</string>
     <string name="home_recent">Recentes</string>
     <string name="home_recent_animation_speed">Velocidade da animação</string>
     <string name="home_recent_disable_wallpaper_dimming">Desativar o escurecimento do papel de parede</string>
@@ -1043,7 +1052,7 @@
     <string name="security_center_newbox_bg_padding_horizontal">Margem vertical</string>
     <string name="security">Segurança</string>
     <string name="security_app_title">Exibir detalhes adicionais do app</string>
-    <string name="security_app_summary">Adicione novos campos à página de informações do app:\n- Número da versão do app\n- ID do usuário\n- Diretório de dados\n- Diretório APK\n- Versão mínima do SDK\n- Versão do SDK de destino\n- Abrir com a Play Store \n- Iniciar um app</string>
+    <string name="security_app_summary">Adicione novos campos à página de informações do app:\n- Número da versão do app\n- ID do usuário\n- Diretório de dados\n- Diretório APK\n- Versão mínima do SDK\n- Versão do SDK de destino\n- Abrir com a Play Store \n- Iniciar</string>
     <string name="security_app_sort_title">Classificação da lista de gerenciar apps</string>
     <string name="security_app_sort_summary">Modifique a classificação padrão da lista de gerenciar apps</string>
     <string name="security_restrict_app_title">Restrições completas</string>
@@ -1068,7 +1077,7 @@
     <string name="security_center_no_permission">Permissões necessárias não concedidas</string>
     <string name="security_center_unlock_side_hide_freeform">Desbloquear ocultar na lateral em janelas flutuantes</string>
     <string name="security_center_unlock_side_hide_freeform_desc">Desbloquear ocultar na lateral em janelas flutuantes para dispositivos com suporte limitado, porém restritos. Isso também afetará o comportamento do widget quando o telefone for cortado em segundo plano</string>
-    <string name="security_center_unlock_smart_charge_title">Desbloquear Proteção inteligente contra carga</string>
+    <string name="security_center_unlock_smart_charge_title">Desbloqueie as funções Proteção inteligente contra carga e Carga rápida de bateria fraca</string>
     <string name="security_center_super_wireless_charge">Desbloquear Carregamento rápido sem fios</string>
     <string name="security_center_blur_model">Modelo do blur da barra lateral</string>
     <string name="security_center_blurradius">Valor do blur da barra lateral</string>
@@ -1109,6 +1118,7 @@
     <!--Barrage-->
     <string name="barrage">Barragem</string>
     <string name="barrage_any_barrage">Permitir que todos os apps usem barragem</string>
+    <string name="barrage_custom_barrage_length">Comprimento de barragem personalizado</string>
     <!--Joyose-->
     <string name="joyose">Joyose</string>
     <string name="joyose_cloud_control_title">Controle de nuvem</string>
@@ -1262,7 +1272,6 @@
     <string name="cemiuiler_restart_quick">Reiniciar apps rapidamente</string>
     <string name="location_add">Adicionar</string>
     <string name="location_delete">Excluir</string>
-    <string name="system_framework_disable_private_watermark">Desativar Marca d\'água privada</string>
     <!--Tip-->
     <string name="tip_0">Dica: Aqui vai uma dica!</string>
     <string name="tip_1">Dica: Você pode nos apoiar doando em \"Sobre - Patrocinadores\".</string>
@@ -1272,7 +1281,7 @@
     <string name="tip_5">Dica: Adivinhe quantas vezes mais você terá que ver essa dica novamente?</string>
     <string name="tip_6">Dica: Torne a MIUI ótima novamente!</string>
     <string name="tip_7">Dica: Seja bem-vindo para seguir no Github: @sevtinge ou Bilibili: @绀漓丨Sevtinge.</string>
-    <string name="tip_8">Dica: Sevtinge é menino ou menina?</string>
+    <string name="tip_8">Dica: A utopia ideal não existe na realidade.</string>
     <string name="tip_9">Dica: A cidade de Sanjiang tende a entrar em colapso.</string>
     <string name="tip_10">Dica: Ah, esse mundo é tão lindo…       Pena que essa beleza não pertença ao Sevtinge.</string>
     <string name="tip_11">Dica: Guardei alguns bugs para que você saiba que está usando o Cemiuiler.</string>
