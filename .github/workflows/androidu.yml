@@ -79,6 +79,7 @@ jobs:
       - name: Generate Git Log
         shell: bash
         run: |
+          > ${{ github.workspace }}/git_log
           git log ${{ github.event.before }}..${{ github.event.after }} --pretty=format:"%h %s" --author="${{ github.event.head_commit.author.name }}" | while read -r line; do
           echo -e '\n' >> "$WORKSPACE/git_log"
           echo -e '*GitHub Action for Main*' >> "$WORKSPACE/git_log"
