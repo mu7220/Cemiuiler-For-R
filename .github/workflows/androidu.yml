@@ -80,8 +80,7 @@ jobs:
           mkdir -p ${{ github.workspace }}/git_clone
           git clone ${{ github.event.repository.url }} ${{ github.workspace }}/git_clone -b ${{ github.ref_name }}
           cd ${{ github.workspace }}/git_clone
-          > ${{ github.workspace }}/git_log
-          git log ${{ github.event.before }}..${{ github.event.after }} --pretty=format:"%h %s" --author="${{ github.event.head_commit.author.name }}" | while read -r line; do
+          git_log ${{ github.event.before }}..${{ github.event.after }} --pretty=format:"%h %s" --author="${{ github.event.head_commit.author.name }}" | while read -r line; do
           echo -e '\n' >> ${{ github.workspace }}/git_log
           echo -e '*Github Action for Main*' >> ${{ github.workspace }}/git_log
           commit_id=$(echo "$line" | awk '{print $1}' | sed 's/\(.*\)/[\1]/')
